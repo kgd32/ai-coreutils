@@ -1,0 +1,133 @@
+# Documentation Agent Configuration
+# Agent Village - Claude Code Skills
+
+# Model Configuration
+model:
+  # Default model for documentation tasks (cost-effective)
+  default: "claude-sonnet-4-5-20250514"
+  # Fallback model if primary unavailable
+  fallback: "claude-3-5-sonnet-20241022"
+  # Use fast model for simple scans
+  fast: "claude-3-5-haiku-20241022"
+
+# ============================================
+# Auto-Sweep Settings
+# ============================================
+auto_sweep:
+  enabled: false  # Set to true to enable automatic sweeps
+  triggers:
+    - git_commit  # Run sweep after commits
+    - daily       # Run once per day
+  exclude_patterns:
+    - "node_modules/**"
+    - "dist/**"
+    - "build/**"
+    - "*.lock"
+    - ".git/**"
+
+# ============================================
+# Documentation Paths
+# ============================================
+paths:
+  docs: "docs/"
+  sessions: "sessions/"
+  state_machines: "state-machines/"
+  readme:
+    - "README.md"
+    - "CLAUDE.md"
+  claude_docs:
+    - ".claude/skills/*.md"
+
+# ============================================
+# Sorting Settings
+# ============================================
+sort:
+  sessions: true  # Keep sessions chronological (newest first)
+  roadmap_first: true  # Important roadmaps at top of docs/
+
+# ============================================
+# Git Settings
+# ============================================
+git:
+  auto_commit: true  # Automatically commit documentation changes
+  auto_push: true  # Automatically push to remote
+  commit_prefix: "docs:"  # Prefix for auto-generated commit messages
+  branch: "xstate-migration-gemini"  # Current working branch
+  # Main branch reference (for documentation purposes)
+  main_branch: "main"
+
+# ============================================
+# Improvements Tracking
+# ============================================
+improvements:
+  file: "docs/IMPROVEMENTS.md"
+  auto_categorize: true
+  # Severity thresholds
+  critical_threshold: "breaking_inaccuracy"
+  medium_threshold: "stale_dates_missing_docs"
+  low_threshold: "typos_formatting"
+  # Auto-fix settings
+  auto_fix:
+    low: true  # Auto-fix low priority issues
+    medium: false  # Require manual review for medium
+    critical: false  # Always require manual review for critical
+
+# ============================================
+# Date Freshness Settings
+# ============================================
+dates:
+  # How old before a date is considered stale
+  stale_threshold_days: 30
+  # Format for Last Updated dates
+  format: "YYYY-MM-DD"
+  # Auto-update stale dates during sweep
+  auto_update_stale: true
+
+# ============================================
+# Cross-Reference Validation
+# ============================================
+cross_references:
+  validate: true  # Check that all linked files exist
+  auto_fix_broken: false  # Set to true to auto-remove broken links
+  warn_on_broken: true  # Log warnings for broken references
+
+# ============================================
+# Session Log Settings
+# ============================================
+sessions:
+  naming_pattern: "YYYY-MM-DD_HH-MM_topic.md"
+  auto_create: true  # Create session log for every doc-update
+  include_summary: true  # Always include executive summary
+  max_kept: 50  # Maximum number of session logs to keep (0 = unlimited)
+
+# ============================================
+# Status Badge Standards
+# ============================================
+status_badges:
+  complete: "✅"
+  in_progress: "🚧"
+  critical: "🔴"
+  warning: "⚠️"
+  reference: "📖"
+  under_review: "🔄"
+
+# ============================================
+# Expertise Context
+# ============================================
+expertise:
+  # Technical areas the doc agent is expert in
+  xstate_version: "v5"
+  typescript_version: "5.x"
+  node_version: "20+"
+  # Project-specific knowledge
+  project_name: "Agent Village"
+  current_phase: 6
+  default_model: "gemini-2.5-flash"
+
+# ============================================
+# Output Settings
+# ============================================
+output:
+  verbose: false  # Detailed logging
+  dry_run: false  # Set to true to preview changes without applying
+  show_diff: false  # Show what changed in each file

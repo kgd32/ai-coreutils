@@ -1,0 +1,237 @@
+# Documentation Agent Configuration
+# AI-Coreutils - Claude Code Skills
+
+# Model Configuration
+model:
+  # Default model for documentation tasks
+  default: "claude-sonnet-4-5-20250514"
+  # Fallback model if primary unavailable
+  fallback: "claude-3-5-sonnet-20241022"
+  # Use fast model for simple scans
+  fast: "claude-3-5-haiku-20241022"
+
+# ============================================
+# AUTO-DOCUMENTATION (CRITICAL)
+# ============================================
+auto_document:
+  # ⚠️ ALWAYS ENABLED FOR AI-COREUTILS ⚠️
+  enabled: true
+
+  # When to auto-document
+  triggers:
+    - after_task      # After every task completion
+    - after_commit    # After every git commit
+    - before_commit   # Before committing changes
+    - on_error        # When errors occur
+
+  # What to document
+  document_everything:
+    - code_changes    # All code modifications
+    - tests           # Test additions/changes
+    - fixes           # Bug fixes
+    - refactors       # Code refactoring
+    - config_changes  # Cargo.toml, config changes
+    - learnings       # New patterns discovered
+
+  # Skip documentation for these patterns
+  exclude_patterns:
+    - "target/**"           # Rust build artifacts
+    - "*.rs.bk"            # Rust backup files
+    - ".git/**"
+    - "*.lock"             # Cargo.lock
+
+# ============================================
+# Documentation Paths
+# ============================================
+paths:
+  # Agent knowledge and context
+  claude_docs:
+    - "CLAUDE.md"
+    - "prompt.md"
+
+  # Task tracking
+  task_tracking:
+    - "ralph.yml"
+
+  # Agent workspace
+  agent_workspace:
+    - ".agent/scratchpad.md"
+    - ".agent/sessions/"
+
+  # Skills
+  skills:
+    - ".claude/skills/*.md"
+
+  # Configuration
+  config:
+    - ".claude/doc-config.yml"
+
+# ============================================
+# Git Settings
+# ============================================
+git:
+  # Auto-commit documentation changes
+  auto_commit: true
+
+  # Auto-push documentation changes
+  auto_push: false  # Set to true if desired
+
+  # Prefix for documentation commits
+  commit_prefix: "docs:"
+
+  # Branch context (auto-detected, no manual branch needed)
+
+# ============================================
+# Session Log Settings
+# ============================================
+sessions:
+  # Session log directory
+  directory: ".agent/sessions/"
+
+  # Naming pattern for session logs
+  naming_pattern: "YYYY-MM-DD_HH-MM_topic.md"
+
+  # Auto-create session logs
+  auto_create: true
+
+  # Always include executive summary
+  include_summary: true
+
+  # Maximum session logs to keep (0 = unlimited)
+  max_kept: 100
+
+  # Session log template
+  template: |
+    # Session: {topic}
+
+    **Date**: {date}
+    **Duration**: {duration}
+    **Task**: {task}
+
+    ## Executive Summary
+    - **Status**: {status}
+    - **Outcome**: {outcome}
+
+    ## What Was Done
+    {changes}
+
+    ## Learnings
+    {learnings}
+
+    ## Next Steps
+    {next_steps}
+
+# ============================================
+# Documentation Standards
+# ============================================
+standards:
+  # Status badge conventions
+  status_badges:
+    complete: "✅"
+    in_progress: "🚧"
+    critical: "🔴"
+    warning: "⚠️"
+    reference: "📖"
+    under_review: "🔄"
+    blocked: "🚫"
+
+  # Date format
+  date_format: "YYYY-MM-DD"
+
+  # Update stale dates
+  auto_update_dates: true
+
+  # Cross-reference validation
+  validate_cross_refs: true
+
+# ============================================
+# Rust-Specific Documentation
+# ============================================
+rust:
+  # Document public API (rustdoc)
+  document_public_api: true
+
+  # Document modules
+  document_modules: true
+
+  # Document error types
+  document_errors: true
+
+  # Document examples
+  document_examples: true
+
+# ============================================
+# Expertise Context
+# ============================================
+expertise:
+  # Technical areas
+  language: "Rust"
+  rust_version: "2021 edition"
+  build_system: "Cargo"
+
+  # Key crates
+  crates:
+    - "memmap2"
+    - "serde_json"
+    - "clap"
+    - "tokio"
+    - "walkdir"
+    - "thiserror"
+
+  # Project-specific
+  project_name: "AI-Coreutils"
+  current_phase: "Phase 1 (MVP)"
+
+  # Output format
+  output_format: "JSONL"
+
+# ============================================
+# Output Settings
+# ============================================
+output:
+  # Verbose logging
+  verbose: false
+
+  # Preview changes without applying (for testing)
+  dry_run: false
+
+  # Show what changed in each file
+  show_diff: false
+
+  # Color output
+  color: true
+
+# ============================================
+# Integration with Other Skills
+# ============================================
+integration:
+  # Automatically invoke after dev-agent
+  invoke_after_dev_agent: true
+
+  # Automatically invoke after test-agent
+  invoke_after_test_agent: true
+
+  # Automatically invoke after phase-agent
+  invoke_after_phase_agent: true
+
+  # Wait for user confirmation before committing
+  require_confirmation: false
+
+# ============================================
+# Quality Checks
+# ============================================
+quality:
+  # Check for missing documentation
+  check_missing_docs: true
+
+  # Check for outdated information
+  check_outdated: true
+
+  # Check for broken links
+  check_broken_links: true
+
+  # Check for inconsistent terminology
+  check_terminology: true
+
+  # Minimum documentation coverage
+  min_coverage_percent: 80
