@@ -1,0 +1,47 @@
+{
+  "_comment": "Ralph Loop Hooks Configuration",
+  "_documentation": "Hooks are implemented via git post-commit hook in .git/hooks/post-commit",
+  "hooks": {
+    "post-commit": {
+      "description": "Show Ralph Loop status after each git commit (agents commit after each task completion)",
+      "enabled": true,
+      "trigger": "after_git_commit",
+      "implementation": {
+        "type": "git_hook",
+        "location": ".git/hooks/post-commit",
+        "scripts": [
+          ".claude/hooks/ralph-status.sh (Unix/Linux/macOS)",
+          ".claude/hooks/ralph-status.cmd (Windows)"
+        ],
+        "condition": {
+          "file_exists": ".ralph/state.json"
+        },
+        "behavior": {
+          "if_ralph_initialized": "Display visual dashboard with iteration, phase, tasks, and progress",
+          "if_ralph_not_initialized": "Silently exit (no output)"
+        }
+      }
+    }
+  },
+  "integration": {
+    "claude_code": {
+      "note": "Git hooks run independently of Claude Code hooks system",
+      "trigger": "Automatically triggered by git after commit"
+    },
+    "manual_trigger": {
+      "command": "/ralph-status",
+      "description": "Manually display Ralph Loop status at any time"
+    }
+  },
+  "installation": {
+    "status": "installed",
+    "files_created": [
+      ".git/hooks/post-commit",
+      ".claude/hooks/ralph-status.sh",
+      ".claude/hooks/ralph-status.cmd"
+    ],
+    "permissions": {
+      "post-commit": "executable (chmod +x)"
+    }
+  }
+}
