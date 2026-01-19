@@ -97,44 +97,47 @@ if ($blocked -eq $true) {
     $taskSymbol = "[TODO]"
 }
 
-# Display status
-Write-Host ""
-Write-Host "+====================================================================+"
-Write-Host "|                         🤖 Ralph Loop Status                       |"
-Write-Host "+--------------------------------------------------------------------+"
-Write-Host "|                                                                    |"
-Write-Host "|  Session                                                           |"
-Write-Host "|  +----------------------------------------------------------------+ |"
-Write-Host ("|  |  Iteration: {0,-58} |" -f $iteration)
-Write-Host ("|  |  Phase: {1,-63} |" -f $phase)
-Write-Host ("|  |  Last Update: {2,-54} |" -f $lastUpdated)
-Write-Host "|  +----------------------------------------------------------------+ |"
-Write-Host "|                                                                    |"
-Write-Host "|  Current Task                                                      |"
-Write-Host "|  +----------------------------------------------------------------+ |"
-Write-Host ("|  |  {0} {1} ({2}){3,46} |" -f $taskSymbol, $currentTask, $taskStatus, "")
-Write-Host "|  +----------------------------------------------------------------+ |"
-Write-Host "|                                                                    |"
-Write-Host "|  Tasks Summary                                                     |"
-Write-Host "|  +----------------------------------------------------------------+ |"
-Write-Host ("|  |  Total: {0}  |  Done: {1}  |  In Progress: {2}  |  Todo: {3,11} |" -f $totalTasks, $doneTasks, $inProgressTasks, $todoTasks)
-Write-Host "|  +----------------------------------------------------------------+ |"
-Write-Host "|                                                                    |"
-Write-Host ("|  Overall Progress:  {0}  {1}% ({2}/{3} tasks)                    |" -f $progressBar, $progress, $doneTasks, $totalTasks)
-Write-Host "|                                                                    |"
-Write-Host "|  Tech Stack                                                        |"
-Write-Host "|  +----------------------------------------------------------------+ |"
-Write-Host ("|  |  Language: {0,-55} |" -f $techStack)
-Write-Host "|  +----------------------------------------------------------------+ |"
-Write-Host "|                                                                    |"
+# Display status - use Write-Output for proper stdout handling in git hooks
+$output = @("")
+$output += "+====================================================================+"
+$output += "|                         🤖 Ralph Loop Status                       |"
+$output += "+--------------------------------------------------------------------+"
+$output += "|                                                                    |"
+$output += "|  Session                                                           |"
+$output += "|  +----------------------------------------------------------------+ |"
+$output += ("|  |  Iteration: {0,-58} |" -f $iteration)
+$output += ("|  |  Phase: {0,-63} |" -f $phase)
+$output += ("|  |  Last Update: {0,-54} |" -f $lastUpdated)
+$output += "|  +----------------------------------------------------------------+ |"
+$output += "|                                                                    |"
+$output += "|  Current Task                                                      |"
+$output += "|  +----------------------------------------------------------------+ |"
+$output += ("|  |  {0} {1} ({2}){3,46} |" -f $taskSymbol, $currentTask, $taskStatus, "")
+$output += "|  +----------------------------------------------------------------+ |"
+$output += "|                                                                    |"
+$output += "|  Tasks Summary                                                     |"
+$output += "|  +----------------------------------------------------------------+ |"
+$output += ("|  |  Total: {0}  |  Done: {1}  |  In Progress: {2}  |  Todo: {3,11} |" -f $totalTasks, $doneTasks, $inProgressTasks, $todoTasks)
+$output += "|  +----------------------------------------------------------------+ |"
+$output += "|                                                                    |"
+$output += ("|  Overall Progress:  {0}  {1}% ({2}/{3} tasks)                    |" -f $progressBar, $progress, $doneTasks, $totalTasks)
+$output += "|                                                                    |"
+$output += "|  Tech Stack                                                        |"
+$output += "|  +----------------------------------------------------------------+ |"
+$output += ("|  |  Language: {0,-55} |" -f $techStack)
+$output += "|  +----------------------------------------------------------------+ |"
+$output += "|                                                                    |"
 
 if ($blocked -eq $true) {
-    Write-Host "|  Blockers                                                          |"
-    Write-Host "|  +----------------------------------------------------------------+ |"
-    Write-Host "|  |  🚧 Ralph Loop is BLOCKED - check .ralph/scratchpad.md     |"
-    Write-Host "|  +----------------------------------------------------------------+ |"
-    Write-Host "|                                                                    |"
+    $output += "|  Blockers                                                          |"
+    $output += "|  +----------------------------------------------------------------+ |"
+    $output += "|  |  🚧 Ralph Loop is BLOCKED - check .ralph/scratchpad.md     |"
+    $output += "|  +----------------------------------------------------------------+ |"
+    $output += "|                                                                    |"
 }
 
-Write-Host "+====================================================================+"
-Write-Host ""
+$output += "+====================================================================+"
+$output += ""
+
+# Output to stdout for git hook capture
+$output | Write-Output
