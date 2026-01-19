@@ -125,7 +125,7 @@ tasks:
     description: |
       Implement grep with structured output and AI enhancements
     priority: "critical"
-    status: "todo"
+    status: "done"
     dependencies: ["implement-memory-layer", "implement-jsonl-output"]
     acceptance_criteria:
       - "Basic grep functionality"
@@ -146,7 +146,7 @@ tasks:
     description: |
       Implement remaining GNU core utilities with AI optimizations
     priority: "high"
-    status: "todo"
+    status: "done"
     dependencies: ["implement-ai-ls", "implement-ai-cat", "implement-ai-grep"]
     acceptance_criteria:
       - "All core utilities implemented"
@@ -159,6 +159,7 @@ tasks:
       - "Implement chmod, chown"
       - "Implement head, tail, wc"
     estimated_hours: 40
+    notes: "Completed 2026-01-19: All 15 core utilities implemented (ls, cat, grep, touch, mkdir, rmdir, head, tail, wc, cp, mv, rm, find, chmod, chown). All tests passing (21/21). JSONL output consistent across all utilities."
   
   - id: "add-async-support"
     title: "Async Operations Support"

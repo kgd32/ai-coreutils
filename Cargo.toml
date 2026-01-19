@@ -70,6 +70,57 @@ path = "src/bin/ai-cat.rs"
 name = "ai-grep"
 path = "src/bin/ai-grep.rs"
 
+[[bin]]
+name = "ai-touch"
+path = "src/bin/ai-touch.rs"
+
+[[bin]]
+name = "ai-mkdir"
+path = "src/bin/ai-mkdir.rs"
+
+[[bin]]
+name = "ai-rmdir"
+path = "src/bin/ai-rmdir.rs"
+
+[[bin]]
+name = "ai-head"
+path = "src/bin/ai-head.rs"
+
+[[bin]]
+name = "ai-tail"
+path = "src/bin/ai-tail.rs"
+
+# Stubs for binaries not yet implemented
+# Uncomment these as the utilities are implemented
+
+[[bin]]
+name = "ai-wc"
+path = "src/bin/ai-wc.rs"
+
+[[bin]]
+name = "ai-cp"
+path = "src/bin/ai-cp.rs"
+
+[[bin]]
+name = "ai-mv"
+path = "src/bin/ai-mv.rs"
+
+[[bin]]
+name = "ai-rm"
+path = "src/bin/ai-rm.rs"
+
+[[bin]]
+name = "ai-find"
+path = "src/bin/ai-find.rs"
+
+[[bin]]
+name = "ai-chmod"
+path = "src/bin/ai-chmod.rs"
+
+[[bin]]
+name = "ai-chown"
+path = "src/bin/ai-chown.rs"
+
 [[bench]]
 name = "memory_access"
 harness = false

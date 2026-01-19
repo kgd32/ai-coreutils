@@ -3,7 +3,7 @@
 //! Provides structured JSONL output for all AI-Coreutils operations.
 
 use crate::error::Result;
-use crate::{AiCoreutilsError, Result as CrateResult};
+use crate::AiCoreutilsError;
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use std::io::Write;
@@ -15,54 +15,78 @@ pub enum JsonlRecord {
     /// Error record
     #[serde(rename = "error")]
     Error {
+        /// Timestamp when the error occurred
         timestamp: DateTime<Utc>,
+        /// Error message
         message: String,
+        /// Error code
         code: String,
     },
 
     /// Result record
     #[serde(rename = "result")]
     Result {
+        /// Timestamp when the result was generated
         timestamp: DateTime<Utc>,
+        /// Result data
         data: serde_json::Value,
     },
 
     /// Metadata record
     #[serde(rename = "metadata")]
     Metadata {
+        /// Timestamp when the metadata was generated
         timestamp: DateTime<Utc>,
+        /// Metadata information
         info: serde_json::Value,
     },
 
     /// Progress record for long operations
     #[serde(rename = "progress")]
     Progress {
+        /// Timestamp when the progress was reported
         timestamp: DateTime<Utc>,
+        /// Current progress count
         current: usize,
+        /// Total items to process
         total: usize,
+        /// Progress message
         message: String,
     },
 
     /// File entry record (for directory listings)
     #[serde(rename = "file")]
     FileEntry {
+        /// Timestamp when the file entry was recorded
         timestamp: DateTime<Utc>,
+        /// File path
         path: String,
+        /// File size in bytes
         size: u64,
+        /// Last modification time
         modified: DateTime<Utc>,
+        /// Whether this is a directory
         is_dir: bool,
+        /// Whether this is a symbolic link
         is_symlink: bool,
+        /// File permissions string
         permissions: String,
     },
 
     /// Match record (for grep operations)
     #[serde(rename = "match")]
     MatchRecord {
+        /// Timestamp when the match was found
         timestamp: DateTime<Utc>,
+        /// File path where match was found
         file: String,
+        /// Line number of the match
         line_number: usize,
+        /// Content of the line
         line_content: String,
+        /// Start position of match within line
         match_start: usize,
+        /// End position of match within line
         match_end: usize,
     },
 }
@@ -136,6 +160,46 @@ impl<W: Write> Drop for JsonlOutput<W> {
     fn drop(&mut self) {
         let _ = self.flush();
     }
+}
+
+/// Output an error record to stdout
+pub fn output_error(message: &str, code: &str, path: Option<&str>) -> Result<()> {
+    let mut output = JsonlOutput::new(std::io::stdout());
+    let record = match path {
+        Some(p) => JsonlRecord::error(
+            format!("{}: {}", p, message),
+            code
+        ),
+        None => JsonlRecord::error(message, code),
+    };
+    output.write_record(&record)?;
+    output.flush()
+}
+
+/// Output a result record to stdout
+pub fn output_result(data: serde_json::Value) -> Result<()> {
+    let mut output = JsonlOutput::new(std::io::stdout());
+    output.write_record(&JsonlRecord::result(data))?;
+    output.flush()
+}
+
+/// Output a metadata record to stdout
+pub fn output_info(info: serde_json::Value) -> Result<()> {
+    let mut output = JsonlOutput::new(std::io::stdout());
+    output.write_record(&JsonlRecord::metadata(info))?;
+    output.flush()
+}
+
+/// Output a progress record to stdout
+pub fn output_progress(current: usize, total: usize, message: &str) -> Result<()> {
+    let mut output = JsonlOutput::new(std::io::stdout());
+    output.write_record(&JsonlRecord::Progress {
+        timestamp: Utc::now(),
+        current,
+        total,
+        message: message.to_string(),
+    })?;
+    output.flush()
 }
 
 #[cfg(test)]
