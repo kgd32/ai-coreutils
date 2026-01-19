@@ -88,7 +88,7 @@ fn main() -> Result<()> {
                     format!("Failed to move {}: {}", source.display(), e),
                     "MV_ERROR"
                 );
-                let _ = println!("{}", error_record.to_jsonl()?);
+                println!("{}", error_record.to_jsonl()?);
             }
         }
     } else {
@@ -106,7 +106,7 @@ fn main() -> Result<()> {
                 format!("Failed to move {}: {}", source.display(), e),
                 "MV_ERROR"
             );
-            let _ = println!("{}", error_record.to_jsonl()?);
+            println!("{}", error_record.to_jsonl()?);
             return Err(e);
         }
     }

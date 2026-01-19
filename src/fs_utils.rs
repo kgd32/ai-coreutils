@@ -9,7 +9,7 @@ use std::path::{Path, PathBuf};
 /// Get file metadata as a structured value
 pub fn get_file_metadata(path: &Path) -> Result<serde_json::Value> {
     let metadata = fs::metadata(path)
-        .map_err(|e| AiCoreutilsError::Io(e))?;
+        .map_err(AiCoreutilsError::Io)?;
 
     Ok(serde_json::json!({
         "size": metadata.len(),
@@ -52,7 +52,7 @@ pub fn validate_path(path: &Path) -> Result<()> {
 /// Resolve a path to its absolute form
 pub fn resolve_path(path: &Path) -> Result<PathBuf> {
     path.canonicalize()
-        .map_err(|e| AiCoreutilsError::Io(e))
+        .map_err(AiCoreutilsError::Io)
 }
 
 /// Check if a path is within a base directory (for security)

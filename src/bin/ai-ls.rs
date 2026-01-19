@@ -89,7 +89,7 @@ impl FileInfo {
                 let secs = t.duration_since(std::time::UNIX_EPOCH).ok()?.as_secs();
                 DateTime::from_timestamp(secs as i64, 0)
             })
-            .unwrap_or_else(|| Utc::now());
+            .unwrap_or_else(Utc::now);
 
         Ok(Self {
             path,

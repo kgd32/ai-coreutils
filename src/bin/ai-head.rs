@@ -138,7 +138,7 @@ fn head_file(
     }
 
     // Fall back to standard I/O
-    let mut f = File::open(file).map_err(|e| ai_coreutils::AiCoreutilsError::Io(e))?;
+    let mut f = File::open(file).map_err(ai_coreutils::AiCoreutilsError::Io)?;
 
     if use_bytes {
         let mut buffer = vec![0u8; count.min(1024 * 1024)]; // Max 1MB buffer

@@ -35,14 +35,14 @@ impl Default for AsyncConfig {
 pub async fn async_read_file(path: &Path) -> Result<Vec<u8>> {
     let mut file = fs::File::open(path)
         .await
-        .map_err(|e| AiCoreutilsError::Io(e))?;
-    let metadata = file.metadata().await.map_err(|e| AiCoreutilsError::Io(e))?;
+        .map_err(AiCoreutilsError::Io)?;
+    let metadata = file.metadata().await.map_err(AiCoreutilsError::Io)?;
     let size = metadata.len() as usize;
 
     let mut buffer = Vec::with_capacity(size);
     file.read_to_end(&mut buffer)
         .await
-        .map_err(|e| AiCoreutilsError::Io(e))?;
+        .map_err(AiCoreutilsError::Io)?;
 
     Ok(buffer)
 }
@@ -57,11 +57,11 @@ pub async fn async_read_file_to_string(path: &Path) -> Result<String> {
 pub async fn async_write_file(path: &Path, data: &[u8]) -> Result<()> {
     let mut file = fs::File::create(path)
         .await
-        .map_err(|e| AiCoreutilsError::Io(e))?;
+        .map_err(AiCoreutilsError::Io)?;
     file.write_all(data)
         .await
-        .map_err(|e| AiCoreutilsError::Io(e))?;
-    file.flush().await.map_err(|e| AiCoreutilsError::Io(e))?;
+        .map_err(AiCoreutilsError::Io)?;
+    file.flush().await.map_err(AiCoreutilsError::Io)?;
     Ok(())
 }
 
@@ -72,11 +72,11 @@ pub async fn async_append_file(path: &Path, data: &[u8]) -> Result<()> {
         .create(true)
         .open(path)
         .await
-        .map_err(|e| AiCoreutilsError::Io(e))?;
+        .map_err(AiCoreutilsError::Io)?;
     file.write_all(data)
         .await
-        .map_err(|e| AiCoreutilsError::Io(e))?;
-    file.flush().await.map_err(|e| AiCoreutilsError::Io(e))?;
+        .map_err(AiCoreutilsError::Io)?;
+    file.flush().await.map_err(AiCoreutilsError::Io)?;
     Ok(())
 }
 
@@ -87,7 +87,7 @@ where
 {
     let file = fs::File::open(path)
         .await
-        .map_err(|e| AiCoreutilsError::Io(e))?;
+        .map_err(AiCoreutilsError::Io)?;
     let reader = BufReader::new(file);
     let mut lines = reader.lines();
 
@@ -95,7 +95,7 @@ where
     while let Some(line) = lines
         .next_line()
         .await
-        .map_err(|e| AiCoreutilsError::Io(e))?
+        .map_err(AiCoreutilsError::Io)?
     {
         line_num += 1;
         callback(line_num, line)?;
@@ -121,18 +121,18 @@ fn async_walk_dir_recursive<'a>(
     Box::pin(async move {
         let mut dir_entry = fs::read_dir(dir)
             .await
-            .map_err(|e| AiCoreutilsError::Io(e))?;
+            .map_err(AiCoreutilsError::Io)?;
 
         while let Some(entry) = dir_entry
             .next_entry()
             .await
-            .map_err(|e| AiCoreutilsError::Io(e))?
+            .map_err(AiCoreutilsError::Io)?
         {
             let path = entry.path();
             let file_type = entry
                 .file_type()
                 .await
-                .map_err(|e| AiCoreutilsError::Io(e))?;
+                .map_err(AiCoreutilsError::Io)?;
 
             if file_type.is_dir() {
                 async_walk_dir_recursive(&path, entries).await?;
@@ -212,17 +212,17 @@ where
 pub async fn async_copy_file(src: &Path, dest: &Path, config: &AsyncConfig) -> Result<u64> {
     let mut src_file = fs::File::open(src)
         .await
-        .map_err(|e| AiCoreutilsError::Io(e))?;
+        .map_err(AiCoreutilsError::Io)?;
 
     let metadata = src_file
         .metadata()
         .await
-        .map_err(|e| AiCoreutilsError::Io(e))?;
+        .map_err(AiCoreutilsError::Io)?;
     let total_size = metadata.len();
 
     let mut dest_file = fs::File::create(dest)
         .await
-        .map_err(|e| AiCoreutilsError::Io(e))?;
+        .map_err(AiCoreutilsError::Io)?;
 
     let mut buffer = vec![0u8; config.buffer_size];
     let mut copied: u64 = 0;
@@ -231,7 +231,7 @@ pub async fn async_copy_file(src: &Path, dest: &Path, config: &AsyncConfig) -> R
         let n = src_file
             .read(&mut buffer)
             .await
-            .map_err(|e| AiCoreutilsError::Io(e))?;
+            .map_err(AiCoreutilsError::Io)?;
 
         if n == 0 {
             break;
@@ -240,11 +240,11 @@ pub async fn async_copy_file(src: &Path, dest: &Path, config: &AsyncConfig) -> R
         dest_file
             .write_all(&buffer[..n])
             .await
-            .map_err(|e| AiCoreutilsError::Io(e))?;
+            .map_err(AiCoreutilsError::Io)?;
 
         copied += n as u64;
 
-        if config.progress && copied % (1024 * 1024) == 0 {
+        if config.progress && copied.is_multiple_of(1024 * 1024) {
             jsonl::output_progress(copied as usize, total_size as usize, "Copying file")?;
         }
     }
@@ -252,7 +252,7 @@ pub async fn async_copy_file(src: &Path, dest: &Path, config: &AsyncConfig) -> R
     dest_file
         .flush()
         .await
-        .map_err(|e| AiCoreutilsError::Io(e))?;
+        .map_err(AiCoreutilsError::Io)?;
 
     if config.progress {
         jsonl::output_info(serde_json::json!({
@@ -270,7 +270,7 @@ pub async fn async_copy_file(src: &Path, dest: &Path, config: &AsyncConfig) -> R
 pub async fn async_wc(path: &Path) -> Result<WcCounts> {
     let file = fs::File::open(path)
         .await
-        .map_err(|e| AiCoreutilsError::Io(e))?;
+        .map_err(AiCoreutilsError::Io)?;
     let reader = BufReader::new(file);
 
     let mut lines = 0u64;
@@ -282,7 +282,7 @@ pub async fn async_wc(path: &Path) -> Result<WcCounts> {
     while let Some(line) = line_reader
         .next_line()
         .await
-        .map_err(|e| AiCoreutilsError::Io(e))?
+        .map_err(AiCoreutilsError::Io)?
     {
         lines += 1;
         bytes += line.len() as u64 + 1; // +1 for newline

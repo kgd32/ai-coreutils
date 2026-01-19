@@ -124,7 +124,7 @@ fn remove_directory(dir: &PathBuf, cli: &Cli) -> Result<RemovalMetadata> {
 
     // Remove the directory
     fs::remove_dir(dir)
-        .map_err(|e| AiCoreutilsError::Io(e))?;
+        .map_err(AiCoreutilsError::Io)?;
 
     let mut parents_removed = Vec::new();
 
@@ -148,7 +148,7 @@ fn remove_directory(dir: &PathBuf, cli: &Cli) -> Result<RemovalMetadata> {
 
             // Remove parent
             fs::remove_dir(parent)
-                .map_err(|e| AiCoreutilsError::Io(e))?;
+                .map_err(AiCoreutilsError::Io)?;
 
             parents_removed.push(parent.display().to_string());
             current = parent.parent();

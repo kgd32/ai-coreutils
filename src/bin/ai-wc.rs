@@ -133,9 +133,9 @@ fn count_file(file: &PathBuf, cli: &Cli) -> Result<Counts> {
     }
 
     // Fall back to standard I/O
-    let mut f = File::open(file).map_err(|e| ai_coreutils::AiCoreutilsError::Io(e))?;
+    let mut f = File::open(file).map_err(ai_coreutils::AiCoreutilsError::Io)?;
     let mut buffer = Vec::new();
-    f.read_to_end(&mut buffer).map_err(|e| ai_coreutils::AiCoreutilsError::Io(e))?;
+    f.read_to_end(&mut buffer).map_err(ai_coreutils::AiCoreutilsError::Io)?;
 
     count_bytes(&buffer, cli)
 }

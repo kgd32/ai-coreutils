@@ -10,7 +10,7 @@ use ai_coreutils::{
     Result,
 };
 use clap::Parser;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 /// AI-optimized cat: Concatenate files with JSONL output
 #[derive(Parser, Debug, Clone)]
@@ -133,7 +133,7 @@ async fn async_main(cli: Cli) -> Result<()> {
     Ok(())
 }
 
-async fn async_cat_file(path: &PathBuf, cli: &Cli) -> Result<()> {
+async fn async_cat_file(path: &Path, cli: &Cli) -> Result<()> {
     // Read file asynchronously
     let data = async_read_file(path).await?;
     let content = String::from_utf8_lossy(&data).to_string();

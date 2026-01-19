@@ -108,9 +108,9 @@ fn touch_file(file: &PathBuf, cli: &Cli) -> Result<FileMetadata> {
     // Get reference time if specified
     let _reference_time = if let Some(ref_file) = &cli.reference {
         let metadata = fs::metadata(ref_file)
-            .map_err(|e| AiCoreutilsError::Io(e))?;
+            .map_err(AiCoreutilsError::Io)?;
         Some(metadata.modified()
-            .map_err(|e| AiCoreutilsError::Io(e))?)
+            .map_err(AiCoreutilsError::Io)?)
     } else {
         None
     };
@@ -118,12 +118,12 @@ fn touch_file(file: &PathBuf, cli: &Cli) -> Result<FileMetadata> {
     // Create file if it doesn't exist
     if !file_exists {
         fs::File::create(file)
-            .map_err(|e| AiCoreutilsError::Io(e))?;
+            .map_err(AiCoreutilsError::Io)?;
     }
 
     // Get current metadata
     let _metadata = fs::metadata(file)
-        .map_err(|e| AiCoreutilsError::Io(e))?;
+        .map_err(AiCoreutilsError::Io)?;
 
     // Update times as requested
     // Note: std::fs doesn't provide a direct way to set times,

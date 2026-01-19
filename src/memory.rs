@@ -36,10 +36,10 @@ impl SafeMemoryAccess {
     pub fn new(path: impl AsRef<Path>) -> Result<Self> {
         let path = path.as_ref();
         let file = File::open(path)
-            .map_err(|e| AiCoreutilsError::Io(e))?;
+            .map_err(AiCoreutilsError::Io)?;
 
         let metadata = file.metadata()
-            .map_err(|e| AiCoreutilsError::Io(e))?;
+            .map_err(AiCoreutilsError::Io)?;
 
         let size = metadata.len() as usize;
 

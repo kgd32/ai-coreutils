@@ -529,7 +529,7 @@ impl FileClassifier {
         // Check for non-printable characters
         let non_printable = content[..sample_size]
             .iter()
-            .filter(|&&b| b < 0x20 && b != b'\t' as u8 && b != b'\n' as u8 && b != b'\r' as u8)
+            .filter(|&&b| b < 0x20 && b != b'\t' && b != b'\n' && b != b'\r')
             .count();
 
         non_printable > sample_size / 20

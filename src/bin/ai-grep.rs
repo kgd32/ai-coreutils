@@ -123,14 +123,12 @@ fn sync_main(cli: Cli) -> Result<()> {
                 );
                 println!("{}", error_record.to_jsonl()?);
             }
-        } else {
-            if let Err(e) = grep_file(path, &cli) {
-                let error_record = JsonlRecord::error(
-                    format!("Failed to search {}: {}", path.display(), e),
-                    "GREP_ERROR",
-                );
-                println!("{}", error_record.to_jsonl()?);
-            }
+        } else if let Err(e) = grep_file(path, &cli) {
+            let error_record = JsonlRecord::error(
+                format!("Failed to search {}: {}", path.display(), e),
+                "GREP_ERROR",
+            );
+            println!("{}", error_record.to_jsonl()?);
         }
     }
 
@@ -294,11 +292,7 @@ fn grep_file(path: &PathBuf, cli: &Cli) -> Result<bool> {
 
                     // Output context before
                     if before > 0 && line_num > 0 {
-                        let start = if line_num > before {
-                            line_num - before
-                        } else {
-                            0
-                        };
+                        let start = line_num.saturating_sub(before);
                         for ctx_line in lines[start..line_num].iter() {
                             let record = JsonlRecord::MatchRecord {
                                 timestamp: chrono::Utc::now(),

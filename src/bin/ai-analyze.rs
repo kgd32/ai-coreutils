@@ -109,7 +109,7 @@ fn analyze_file(detector: &PatternDetector, cli: &Cli, file_path: &PathBuf) -> R
 
     // Read file content
     let content = fs::read(file_path)
-        .map_err(|e| ai_coreutils::error::AiCoreutilsError::Io(e))?;
+        .map_err(ai_coreutils::error::AiCoreutilsError::Io)?;
 
     // Classify file
     if cli.classify {

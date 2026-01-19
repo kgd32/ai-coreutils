@@ -114,7 +114,7 @@ fn main() -> Result<()> {
                     format!("Failed to copy {}: {}", source.display(), e),
                     "CP_ERROR"
                 );
-                let _ = println!("{}", error_record.to_jsonl()?);
+                println!("{}", error_record.to_jsonl()?);
             }
         }
     } else {
@@ -132,7 +132,7 @@ fn main() -> Result<()> {
                 format!("Failed to copy {}: {}", source.display(), e),
                 "CP_ERROR"
             );
-            let _ = println!("{}", error_record.to_jsonl()?);
+            println!("{}", error_record.to_jsonl()?);
             return Err(e);
         }
     }
@@ -301,7 +301,7 @@ fn copy_file(source: &Path, dest: &Path, cli: &Cli, stats: &mut CopyStats) -> Re
         total_copied += bytes_read as u64;
 
         // Output progress for large files
-        if file_size > 1024 * 1024 && total_copied % (1024 * 1024) == 0 {
+        if file_size > 1024 * 1024 && total_copied.is_multiple_of(1024 * 1024) {
             jsonl::output_progress(total_copied as usize, file_size as usize, &format!("Copying {}", source.display()))?;
         }
     }

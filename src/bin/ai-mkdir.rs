@@ -101,10 +101,10 @@ fn create_directory(dir: &PathBuf, cli: &Cli) -> Result<DirectoryMetadata> {
     // Create directory
     if cli.parents {
         fs::create_dir_all(dir)
-            .map_err(|e| AiCoreutilsError::Io(e))?;
+            .map_err(AiCoreutilsError::Io)?;
     } else {
         fs::create_dir(dir)
-            .map_err(|e| AiCoreutilsError::Io(e))?;
+            .map_err(AiCoreutilsError::Io)?;
     }
 
     // Note: Setting mode is platform-specific and not fully supported here

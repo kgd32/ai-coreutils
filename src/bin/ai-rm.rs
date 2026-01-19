@@ -91,7 +91,7 @@ fn main() -> Result<()> {
                     format!("Failed to remove {}: {}", path.display(), e),
                     "RM_ERROR"
                 );
-                let _ = println!("{}", error_record.to_jsonl()?);
+                println!("{}", error_record.to_jsonl()?);
             }
         }
     }

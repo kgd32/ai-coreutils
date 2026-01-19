@@ -157,13 +157,13 @@ fn tail_file(
     }
 
     // Fall back to standard I/O
-    let mut f = File::open(file).map_err(|e| ai_coreutils::AiCoreutilsError::Io(e))?;
+    let mut f = File::open(file).map_err(ai_coreutils::AiCoreutilsError::Io)?;
     let metadata = f.metadata()?;
     let file_size = metadata.len() as usize;
 
     if use_bytes {
         // Seek to position and read
-        let start = if file_size > count { file_size - count } else { 0 };
+        let start = file_size.saturating_sub(count);
         f.seek(SeekFrom::Start(start as u64))?;
 
         let mut buffer = Vec::new();
@@ -206,7 +206,7 @@ fn tail_mmap(
 
     if use_bytes {
         // Read last N bytes
-        let start = if size > count { size - count } else { 0 };
+        let start = size.saturating_sub(count);
         let bytes_to_read = size - start;
 
         if let Some(data) = mmap.get(start, bytes_to_read) {
