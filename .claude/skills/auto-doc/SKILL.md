@@ -1,3 +1,8 @@
+---
+name: auto-doc
+description: AUTOMATICALLY invoked after all work to maintain documentation. Updates CLAUDE.md with learnings, ralph.yml with task status, creates session logs, and commits documentation. Never needs manual invocation - runs automatically after tasks, commits, tests, and errors.
+---
+
 # Auto-Documentation Skill
 
 > **Purpose**: AUTOMATICALLY invoked after all work to maintain documentation

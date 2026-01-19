@@ -1,3 +1,8 @@
+---
+name: phase-agent
+description: Track and manage development phases for AI-Coreutils. Check phase status, start new phases, complete phases, or block phases on issues. Use to coordinate progress across MVP (Phase 1), Enhanced Features (Phase 2), and Polish & Scale (Phase 3).
+---
+
 # Phase Agent
 
 > **Purpose**: Track and manage AI-Coreutils development phases

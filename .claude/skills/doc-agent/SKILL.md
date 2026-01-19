@@ -1,3 +1,8 @@
+---
+name: doc-agent
+description: Manually update documentation for specific topics or perform comprehensive documentation sweeps. Updates CLAUDE.md with learnings, ralph.yml with task status, and creates session logs. Use for targeted documentation updates after completing specific features or tasks.
+---
+
 # Documentation Agent
 
 > **Purpose**: Maintain AI-Coreutils documentation after all work

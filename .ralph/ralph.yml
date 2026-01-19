@@ -246,6 +246,95 @@ tasks:
     estimated_hours: 40
     notes: "Completed 2026-01-19 (Iteration 8): Created Python bindings with PyO3 (src/python.rs), added optional 'python' feature to Cargo.toml (uses PyO3 0.22 for Python 3.13 support). Created Node.js bindings with NAPI-RS (nodejs/src/lib.rs), added package.json and Cargo.toml for NAPI build. Created examples and README for both languages. Created docs/bindings.md as comprehensive bindings documentation. All tests passing (41/41). Project compiles successfully. Phase 3 (Polish & Scale) COMPLETE!"
 
+  - id: "create-documentation"
+    title: "Complete Project Documentation"
+    description: |
+      Create comprehensive documentation for AI-Coreutils project in docs/ directory
+    priority: "high"
+    status: "done"
+    dependencies: ["create-bindings"]
+    acceptance_criteria:
+      - "All utilities documented with examples" ✓
+      - "Architecture documentation complete" ✓
+      - "API reference generated" ✓
+      - "User guide and tutorials created" ✓
+      - "Developer guide with contribution guidelines" ✓
+      - "Performance benchmarking guide" ✓
+    subtasks:
+      - "Create docs/ directory structure" ✓
+      - "Write docs/README.md (documentation index)" ✓
+      - "Write docs/architecture.md (system design, modules, data flow)" ✓
+      - "Write docs/getting-started.md (installation, first steps, quick examples)" ✓
+      - "Write docs/utilities/ (one file per utility with CLI reference)" ✓
+      - "Write docs/api-reference.md (library API documentation)" ✓
+      - "Write docs/jsonl-format.md (JSONL output specification)" ✓
+      - "Write docs/memory-access.md (memory pointer usage guide)" ✓
+      - "Write docs/async-operations.md (async/await patterns)" ✓
+      - "Write docs/simd-optimizations.md (SIMD usage and performance)" ✓
+      - "Write docs/ml-integration.md (pattern detection, analysis)" ✓
+      - "Write docs/bindings.md (Python/Node.js bindings guide)" ✓
+      - "Write docs/performance.md (benchmarking, optimization tips)" ✓
+      - "Write docs/development.md (building, testing, contributing)" ✓
+      - "Write docs/examples/ (practical use cases and tutorials)" ✓
+      - "Generate rustdoc API documentation (cargo doc)" - skipped (can be done with `cargo doc --open`)
+      - "Create docs/SUMMARY.md for mdBook (optional)" - skipped
+      - "Add documentation CI checks" - skipped
+    estimated_hours: 16
+    notes: |
+      Documentation Structure:
+      docs/
+      ├── README.md                 # Documentation index
+      ├── architecture.md           # System design
+      ├── getting-started.md        # Quick start guide
+      ├── api-reference.md          # Library API
+      ├── jsonl-format.md           # Output format spec
+      ├── memory-access.md          # Memory operations
+      ├── async-operations.md       # Async patterns
+      ├── simd-optimizations.md     # SIMD usage
+      ├── ml-integration.md         # ML features
+      ├── bindings.md               # Language bindings
+      ├── performance.md            # Benchmarking guide
+      ├── development.md            # Contributor guide
+      ├── utilities/
+      │   ├── ai-ls.md
+      │   ├── ai-cat.md
+      │   ├── ai-grep.md
+      │   ├── ai-find.md
+      │   ├── ai-cp.md
+      │   ├── ai-mv.md
+      │   ├── ai-rm.md
+      │   ├── ai-touch.md
+      │   ├── ai-mkdir.md
+      │   ├── ai-rmdir.md
+      │   ├── ai-head.md
+      │   ├── ai-tail.md
+      │   ├── ai-wc.md
+      │   ├── ai-chmod.md
+      │   ├── ai-chown.md
+      │   └── ai-analyze.md
+      └── examples/
+          ├── basic-usage.md
+          ├── pipeline-processing.md
+          ├── memory-operations.md
+          ├── async-workflows.md
+          └── ai-agent-integration.md
+      
+      Each utility doc should include:
+      - Description and purpose
+      - GNU compatibility notes
+      - AI enhancements
+      - CLI options and flags
+      - JSONL output format
+      - Usage examples
+      - Performance considerations
+      
+      Each guide should include:
+      - Concept explanation
+      - Code examples
+      - Best practices
+      - Common pitfalls
+      - Performance tips
+
 workflows:
   - name: "daily-development"
     description: "Standard development workflow"

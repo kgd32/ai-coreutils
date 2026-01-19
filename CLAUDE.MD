@@ -11,6 +11,60 @@ This document accumulates knowledge about what works and what doesn't in AI-Core
 
 ---
 
+## ⚠️ MANDATORY: Subtask Tracking (DO THIS EVERY TIME!)
+
+**CRITICAL**: You MUST mark subtasks complete in `ralph.yml` IMMEDIATELY after finishing them.
+
+### The Rule
+
+**Every time you complete a subtask, mark it with ✓ in ralph.yml BEFORE doing anything else.**
+
+### How to Mark Subtasks Complete
+
+**Before:**
+```yaml
+subtasks:
+  - "Create docs/ directory structure"
+  - "Write docs/README.md"
+  - "Write docs/architecture.md"
+```
+
+**After completing the first subtask:**
+```yaml
+subtasks:
+  - "Create docs/ directory structure" ✓
+  - "Write docs/README.md"
+  - "Write docs/architecture.md"
+```
+
+### When to Mark (Checklist)
+
+Mark a subtask complete when:
+- ✅ The file is created/updated
+- ✅ The content is complete and accurate
+- ✅ You've verified it's correct
+
+Then mark it with ✓ **immediately** - don't wait until the end of the task!
+
+### Alternative Formats (all acceptable)
+
+```yaml
+- "Complete implementation" ✓      # Checkmark
+- "~~Add tests~~"                  # Strikethrough
+- "[x] Write docs"                 # Checkbox style
+```
+
+### This is MANDATORY
+
+**Checklist before finishing your response:**
+- [ ] Did I mark the subtask(s) I completed with ✓?
+- [ ] Did I update ralph.yml with the checkmarks?
+- [ ] Did I commit the ralph.yml changes?
+
+**If you answer NO to any of these, go back and mark your subtasks NOW.**
+
+---
+
 ## ⚠️ MANDATORY: Auto-Documentation Policy
 
 **CRITICAL**: ALL agents and developers MUST follow the auto-documentation policy for AI-Coreutils.
@@ -527,6 +581,9 @@ impl SafeMemoryAccess {
 21. **Python bindings: Use PyO3 with optional `python` feature for conditional compilation**
 22. **Node.js bindings: Use NAPI-RS with separate crate for native module building**
 23. **Cross-language patterns: Expose wrapper structs with idiomatic APIs for each language (e.g., `to_dict()` for Python, plain objects for JS)**
+24. **Clippy warnings: Use `AiCoreutilsError::Io` directly instead of `|e| AiCoreutilsError::Io(e)` for redundant closures**
+25. **Type hints: Use `&Path` instead of `&PathBuf` for function parameters when ownership isn't needed**
+26. **Byte literals: Don't cast byte literals to their own type (e.g., `b'\t'` not `b'\t' as u8`)**
 
 ### Pattern: SIMD-accelerated operations
 **Problem:** Need high-performance text processing operations for large files.
@@ -845,10 +902,19 @@ confidence.min(1.0)  // Works!
 - All tests passing (42/42: 36 library + 5 integration + 1 doc)
 - Phase 3 (Polish & Scale) ML integration complete!
 
+**Iteration 8 (2026-01-19):**
+- Applied clippy suggestions for improved code quality
+- Fixed redundant closure warnings by using direct variant constructors
+- Fixed unnecessary_cast warnings in ml_ops.rs
+- Fixed ptr_arg warning by using &Path instead of &PathBuf
+- Added Path import to ai-cat.rs
+- All tests passing (47/47: 41 library + 5 integration + 1 doc)
+- Project is feature-complete with clean code quality!
+
 **Next iteration should focus on:**
-- Run performance benchmarks to validate SIMD and ML improvements
-- Phase 3: Complete remaining tasks (cross-language bindings)
-- Consider OpenAI API integration for advanced ML features
+- Performance benchmarking and optimization (optional)
+- OpenAI API integration for advanced ML features (optional)
+- Release preparation (v0.1.0) - optional
 
 ## Update Log
 - 2026-01-18: Initial setup
@@ -860,3 +926,4 @@ confidence.min(1.0)  // Works!
 - 2026-01-19: Phase 3 (Polish & Scale) - SIMD optimizations complete! Added simd_ops module with AVX2/SSE2 support, updated SafeMemoryAccess to use SIMD, created performance benchmarks
 - 2026-01-19: Phase 3 (Polish & Scale) - ML integration complete! Added ml_ops module with PatternDetector, FileClassifier, ContentAnalysis, implemented ai-analyze utility with pattern detection and file analysis
 - 2026-01-19: Phase 3 (Polish & Scale) - Cross-language bindings complete! Added Python bindings (PyO3) and Node.js bindings (NAPI-RS) with full API exposure for memory access, SIMD operations, pattern detection, and file classification
+- 2026-01-19: Code quality improvements - Applied clippy suggestions, fixed redundant closures, unnecessary casts, and pointer argument warnings

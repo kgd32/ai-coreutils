@@ -1,3 +1,8 @@
+---
+name: dev-agent
+description: Primary development skill for implementing features, writing code, fixing bugs, and making changes to the AI-Coreutils Rust project. Invokes auto-doc automatically after committing changes. Use for any code work including utilities, tests, benchmarks, or refactoring.
+---
+
 # Development Agent
 
 > **Purpose**: Primary skill for AI-Coreutils development tasks

@@ -2,9 +2,29 @@
 
 This directory contains the skills for AI-Coreutils development.
 
-## Auto-Invoked Skills
+## Skill Directory Structure
 
-### auto-doc.md ⚠️ ALWAYS ENABLED
+Each skill has its own directory with a `SKILL.md` file that includes:
+- **Frontmatter**: `name` and `description` for easy discovery
+- **Documentation**: Full skill behavior and usage
+
+```
+.claude/skills/
+├── auto-doc/
+│   └── SKILL.md
+├── dev-agent/
+│   └── SKILL.md
+├── doc-agent/
+│   └── SKILL.md
+├── phase-agent/
+│   └── SKILL.md
+└── test-agent/
+    └── SKILL.md
+```
+
+## Available Skills
+
+### auto-doc
 - **Status**: Automatically invoked after all work
 - **Purpose**: Maintains documentation without manual intervention
 - **Trigger**: After tasks, commits, tests, errors
@@ -12,24 +32,22 @@ This directory contains the skills for AI-Coreutils development.
 
 **NO MANUAL INVOCATION NEEDED** - This runs automatically.
 
-## Primary Skills
-
-### dev-agent.md
+### dev-agent
 - **Purpose**: Development work implementation
 - **Usage**: `skill: "dev-agent" --task "<description>"`
 - **Auto-doc integration**: Invoked after code changes
 
-### test-agent.md
+### test-agent
 - **Purpose**: Test execution and verification
 - **Usage**: `skill: "test-agent" --scope "<scope>"`
 - **Auto-doc integration**: Invoked after test runs
 
-### phase-agent.md
+### phase-agent
 - **Purpose**: Phase tracking and management
 - **Usage**: `skill: "phase-agent" --action "<action>" --phase "<N>"`
 - **Auto-doc integration**: Invoked after phase updates
 
-### doc-agent.md
+### doc-agent
 - **Purpose**: Manual documentation (sweep/targeted modes)
 - **Usage**: `skill: "doc-agent"` or `skill: "doc-agent" --target "<topic>"`
 - **Note**: Use for manual documentation sweeps; auto-doc handles routine updates

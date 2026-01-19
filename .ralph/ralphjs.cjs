@@ -27,14 +27,18 @@ const COLORS = {
   YELLOW: '\x1b[1;33m',
   BLUE: '\x1b[0;34m',
   PURPLE: '\x1b[0;35m',
-  NC: '\x1b[0m'
+  CYAN: '\x1b[0;36m',
+  BRIGHT: '\x1b[1m',
+  DIM: '\x1b[2m',
+  NC: '\x1b[0m',
+  RESET: '\x1b[0m'
 };
 
 class RalphLoop {
   constructor(projectRoot) {
     this.projectRoot = projectRoot || path.resolve(__dirname, '..');
     this.ralphDir = path.join(this.projectRoot, '.ralph');
-    
+
     // File paths
     this.paths = {
       stateFile: path.join(this.ralphDir, 'state.json'),
@@ -56,15 +60,15 @@ class RalphLoop {
   log(level, message) {
     const timestamp = new Date().toISOString().replace('T', ' ').substring(0, 19);
     const color = COLORS[level] || COLORS.BLUE;
-    
+
     console.log(`${color}[${timestamp}] [${level}] ${message}${COLORS.NC}`);
-    
+
     // Log to file
     const logFile = path.join(
-      this.paths.historyDir, 
+      this.paths.historyDir,
       `ralph-${new Date().toISOString().split('T')[0].replace(/-/g, '')}.log`
     );
-    
+
     if (fs.existsSync(this.paths.historyDir)) {
       fs.appendFileSync(logFile, `[${timestamp}] [${level}] ${message}\n`);
     }
@@ -159,11 +163,11 @@ class RalphLoop {
       const state = JSON.parse(fs.readFileSync(this.paths.stateFile, 'utf8'));
       const keys = field.split('.');
       let value = state;
-      
+
       for (const key of keys) {
         value = value?.[key];
       }
-      
+
       return value;
     } catch (error) {
       return null;
@@ -178,14 +182,14 @@ class RalphLoop {
       const state = JSON.parse(fs.readFileSync(this.paths.stateFile, 'utf8'));
       const keys = field.split('.');
       let current = state;
-      
+
       for (let i = 0; i < keys.length - 1; i++) {
         current = current[keys[i]];
       }
-      
+
       current[keys[keys.length - 1]] = value;
       state.metadata.updated_at = new Date().toISOString();
-      
+
       fs.writeFileSync(this.paths.stateFile, JSON.stringify(state, null, 2));
     } catch (error) {
       this.log('ERROR', `Failed to update state: ${error.message}`);
@@ -239,7 +243,7 @@ class RalphLoop {
     try {
       const output = fs.readFileSync(outputFile, 'utf8');
       const statusMatch = output.match(/---RALPH_STATUS---([\s\S]*?)---END_RALPH_STATUS---/);
-      
+
       if (!statusMatch) {
         return { exitSignal: false };
       }
@@ -266,6 +270,103 @@ class RalphLoop {
       this.log('ERROR', `Failed to parse RALPH_STATUS: ${error.message}`);
       return { exitSignal: false };
     }
+  }
+
+  /**
+   * Parse Claude output JSON for API metrics
+   */
+  parseClaudeOutput(outputFile) {
+    try {
+      const content = fs.readFileSync(outputFile, 'utf8');
+      const json = JSON.parse(content);
+
+      return {
+        duration_ms: json.duration_ms || 0,
+        duration_api_ms: json.duration_api_ms || 0,
+        num_turns: json.num_turns || 0,
+        total_cost_usd: json.total_cost_usd || 0,
+        input_tokens: json.usage?.input_tokens || 0,
+        output_tokens: json.usage?.output_tokens || 0,
+        cache_read_tokens: json.usage?.cache_read_input_tokens || 0
+      };
+    } catch (error) {
+      return null;
+    }
+  }
+
+  /**
+   * Display compact iteration summary
+   */
+  displayIterationSummary(iteration, ralphStatus, apiMetrics) {
+    const width = process.stdout.columns || 120;
+    const border = '═'.repeat(width - 2);
+
+    // Status color
+    const statusColors = {
+      'COMPLETE': COLORS.GREEN,
+      'IN_PROGRESS': COLORS.YELLOW,
+      'BLOCKED': COLORS.RED
+    };
+    const statusColor = statusColors[ralphStatus.status] || COLORS.CYAN;
+
+    // Format metrics
+    const duration = apiMetrics ? `${(apiMetrics.duration_ms / 1000).toFixed(1)}s` : 'N/A';
+    const apiTime = apiMetrics ? `${(apiMetrics.duration_api_ms / 1000).toFixed(1)}s` : 'N/A';
+    const cost = apiMetrics ? `$${apiMetrics.total_cost_usd.toFixed(4)}` : 'N/A';
+    const tokens = apiMetrics ? `${(apiMetrics.input_tokens / 1000).toFixed(0)}k in / ${(apiMetrics.output_tokens / 1000).toFixed(1)}k out` : 'N/A';
+    const cached = apiMetrics ? `${(apiMetrics.cache_read_tokens / 1000).toFixed(0)}k` : 'N/A';
+    const turns = apiMetrics ? apiMetrics.num_turns : 'N/A';
+
+    console.log(`\n${COLORS.CYAN}╔${border}╗${COLORS.RESET}`);
+    console.log(`${COLORS.CYAN}║${COLORS.RESET} ${COLORS.BRIGHT}ITERATION ${iteration} COMPLETE${COLORS.RESET}${' '.repeat(width - 25)}${COLORS.CYAN}║${COLORS.RESET}`);
+    console.log(`${COLORS.CYAN}╠${border}╣${COLORS.RESET}`);
+
+    // Row 1: Status, Task, Work Type
+    const row1 = `${COLORS.CYAN}║${COLORS.RESET} Status: ${statusColor}${COLORS.BRIGHT}${ralphStatus.status}${COLORS.RESET}` +
+                 ` │ Task: ${COLORS.YELLOW}${ralphStatus.currentTask || 'N/A'}${COLORS.RESET}` +
+                 ` │ Type: ${COLORS.MAGENTA}${ralphStatus.workType || 'N/A'}${COLORS.RESET}`;
+    const row1Clean = row1.replace(/\x1b\[[0-9;]*m/g, '');
+    const row1Padding = width - row1Clean.length + 1;
+    console.log(`${row1}${' '.repeat(Math.max(0, row1Padding))}${COLORS.CYAN}║${COLORS.RESET}`);
+
+    // Row 2: Files, Tests, Tasks Completed
+    const testsColor = ralphStatus.testsStatus === 'PASSING' ? COLORS.GREEN :
+                       ralphStatus.testsStatus === 'FAILING' ? COLORS.RED : COLORS.YELLOW;
+    const row2 = `${COLORS.CYAN}║${COLORS.RESET} Files: ${COLORS.BLUE}${ralphStatus.filesModified}${COLORS.RESET}` +
+                 ` │ Tests: ${testsColor}${ralphStatus.testsStatus || 'N/A'}${COLORS.RESET}` +
+                 ` │ Tasks Done: ${COLORS.GREEN}${ralphStatus.tasksCompleted}${COLORS.RESET}` +
+                 ` │ Exit: ${ralphStatus.exitSignal ? COLORS.GREEN + 'YES' : COLORS.DIM + 'no'}${COLORS.RESET}`;
+    const row2Clean = row2.replace(/\x1b\[[0-9;]*m/g, '');
+    const row2Padding = width - row2Clean.length + 1;
+    console.log(`${row2}${' '.repeat(Math.max(0, row2Padding))}${COLORS.CYAN}║${COLORS.RESET}`);
+
+    console.log(`${COLORS.CYAN}╠${border}╣${COLORS.RESET}`);
+
+    // Row 3: API Metrics
+    const row3 = `${COLORS.CYAN}║${COLORS.RESET} ${COLORS.DIM}Duration:${COLORS.RESET} ${duration}` +
+                 ` │ ${COLORS.DIM}API:${COLORS.RESET} ${apiTime}` +
+                 ` │ ${COLORS.DIM}Turns:${COLORS.RESET} ${turns}` +
+                 ` │ ${COLORS.DIM}Tokens:${COLORS.RESET} ${tokens}` +
+                 ` │ ${COLORS.DIM}Cached:${COLORS.RESET} ${cached}` +
+                 ` │ ${COLORS.DIM}Cost:${COLORS.RESET} ${cost}`;
+    const row3Clean = row3.replace(/\x1b\[[0-9;]*m/g, '');
+    const row3Padding = width - row3Clean.length + 1;
+    console.log(`${row3}${' '.repeat(Math.max(0, row3Padding))}${COLORS.CYAN}║${COLORS.RESET}`);
+
+    // Row 4: Recommendation
+    if (ralphStatus.recommendation) {
+      console.log(`${COLORS.CYAN}╠${border}╣${COLORS.RESET}`);
+      const maxRecommendationWidth = width - 6;
+      const recommendation = ralphStatus.recommendation.length > maxRecommendationWidth
+        ? ralphStatus.recommendation.substring(0, maxRecommendationWidth - 3) + '...'
+        : ralphStatus.recommendation;
+      const row4 = `${COLORS.CYAN}║${COLORS.RESET} ${COLORS.DIM}→${COLORS.RESET} ${recommendation}`;
+      const row4Clean = row4.replace(/\x1b\[[0-9;]*m/g, '');
+      const row4Padding = width - row4Clean.length + 1;
+      console.log(`${row4}${' '.repeat(Math.max(0, row4Padding))}${COLORS.CYAN}║${COLORS.RESET}`);
+    }
+
+    console.log(`${COLORS.CYAN}╚${border}╝${COLORS.RESET}\n`);
   }
 
   /**
@@ -298,17 +399,53 @@ class RalphLoop {
   }
 
   /**
-   * Count tasks from ralph.yml
+   * Count tasks from ralph.yml with subtask tracking
    */
   countTasks() {
     try {
       const ymlContent = fs.readFileSync(this.paths.ralphYml, 'utf8');
-      const totalTasks = (ymlContent.match(/^  - id:/gm) || []).length;
-      const completedTasks = (ymlContent.match(/status: done/gm) || []).length;
-      
-      return { totalTasks, completedTasks };
+
+      // Match both formats for tasks
+      const idMatches = ymlContent.match(/^[\s]*-[\s]+id:/gm) || [];
+      const totalTasks = idMatches.length;
+
+      // Count completed tasks
+      const completedTasks = (ymlContent.match(/status:[\s]+"?done"?/gm) || []).length;
+
+      // Count subtasks (lines starting with "- " under subtasks:)
+      let totalSubtasks = 0;
+      let completedSubtasks = 0;
+
+      // Find all subtask sections
+      const subtaskSections = ymlContent.match(/subtasks:\s*\n([\s\S]*?)(?=\n[\s]{0,4}\w+:|$)/gm) || [];
+
+      subtaskSections.forEach(section => {
+        // Count all subtask items (lines with "- ")
+        const items = section.match(/^[\s]+-[\s]+"[^"]*"/gm) || [];
+        totalSubtasks += items.length;
+
+        // Count completed subtasks (items with ✓, ✔, [x], or strikethrough ~~)
+        const completed = section.match(/^[\s]+-[\s]+"[^"]*[✓✔]/gm) || [];
+        const checked = section.match(/^[\s]+-[\s]+\[x\]/gm) || [];
+        const strikethrough = section.match(/^[\s]+-[\s]+"?~~[^~]*~~/gm) || [];
+
+        completedSubtasks += completed.length + checked.length + strikethrough.length;
+      });
+
+      return {
+        totalTasks,
+        completedTasks,
+        totalSubtasks,
+        completedSubtasks
+      };
     } catch (error) {
-      return { totalTasks: 0, completedTasks: 0 };
+      this.log('ERROR', `Failed to count tasks: ${error.message}`);
+      return {
+        totalTasks: 0,
+        completedTasks: 0,
+        totalSubtasks: 0,
+        completedSubtasks: 0
+      };
     }
   }
 
@@ -316,8 +453,10 @@ class RalphLoop {
    * Build prompt for Claude
    */
   buildPrompt(iteration, sessionId) {
-    const { totalTasks, completedTasks } = this.countTasks();
+    const taskStats = this.countTasks();
+    const { totalTasks, completedTasks, totalSubtasks, completedSubtasks } = taskStats;
     const completionPct = totalTasks > 0 ? Math.floor((completedTasks * 100) / totalTasks) : 0;
+    const subtaskPct = totalSubtasks > 0 ? Math.floor((completedSubtasks * 100) / totalSubtasks) : 0;
 
     // Update state
     this.updateState('tasks.total_tasks', totalTasks);
@@ -327,17 +466,58 @@ class RalphLoop {
     let projectName = 'Project';
     try {
       const ymlContent = fs.readFileSync(this.paths.ralphYml, 'utf8');
-      const nameMatch = ymlContent.match(/^name:\s*(.+)$/m);
-      if (nameMatch) projectName = nameMatch[1].trim();
+      // Try both formats: "name:" at root or "project.name:"
+      const nameMatch = ymlContent.match(/^[\s]*name:[\s]*["']?([^"'\n]+)["']?/m);
+      if (nameMatch) {
+        projectName = nameMatch[1].trim();
+      }
     } catch (error) {
-      // Use default
+      this.log('WARN', `Failed to parse project name: ${error.message}`);
+    }
+
+    // Get current task (first non-done task)
+    let currentTask = 'No active task';
+    let currentTaskSubtasks = '';
+    try {
+      const ymlContent = fs.readFileSync(this.paths.ralphYml, 'utf8');
+
+      // Find all task blocks
+      const taskBlocks = ymlContent.split(/^[\s]*-[\s]+id:/gm).slice(1);
+
+      for (const block of taskBlocks) {
+        // Check if this task is not done
+        if (!block.match(/status:[\s]+"?done"?/)) {
+          const idMatch = block.match(/^[\s]*["']?([^"'\n]+)["']?/);
+          const titleMatch = block.match(/title:[\s]*["']?([^"'\n]+)["']?/m);
+          const statusMatch = block.match(/status:[\s]*["']?([^"'\n]+)["']?/m);
+
+          // Extract subtasks
+          const subtasksMatch = block.match(/subtasks:\s*\n([\s\S]*?)(?=\n[\s]{0,4}\w+:|$)/);
+          if (subtasksMatch) {
+            const subtaskLines = subtasksMatch[1].match(/^[\s]+-[\s]+.+$/gm) || [];
+            if (subtaskLines.length > 0) {
+              currentTaskSubtasks = '\n  Subtasks:\n' + subtaskLines.map(line => `  ${line.trim()}`).join('\n');
+            }
+          }
+
+          if (idMatch) {
+            const id = idMatch[1].trim();
+            const title = titleMatch ? titleMatch[1].trim() : 'Untitled';
+            const status = statusMatch ? statusMatch[1].trim() : 'pending';
+            currentTask = `${id} - ${title} (${status})${currentTaskSubtasks}`;
+            break;
+          }
+        }
+      }
+    } catch (error) {
+      this.log('WARN', `Failed to parse current task: ${error.message}`);
     }
 
     // Read prompt template
     let promptContent = '';
     if (fs.existsSync(this.paths.promptFileMd)) {
       promptContent = fs.readFileSync(this.paths.promptFileMd, 'utf8');
-      
+
       // Replace template variables
       promptContent = promptContent
         .replace(/\{\{PROJECT_NAME\}\}/g, projectName)
@@ -361,7 +541,10 @@ class RalphLoop {
 
 - **Iteration**: ${iteration}
 - **Session**: ${sessionId}
-- **Completion**: ${completedTasks}/${totalTasks} tasks (${completionPct}%)
+- **Task Progress**: ${completedTasks}/${totalTasks} tasks (${completionPct}%)
+- **Subtask Progress**: ${completedSubtasks}/${totalSubtasks} subtasks (${subtaskPct}%)
+- **Current Task**:
+${currentTask}
 
 ---
 
@@ -372,6 +555,7 @@ ${scratchpadNotes}
 ---
 
 Begin your work on the highest priority task from ralph.yml.
+When you complete a subtask, mark it with ✓ or ~~strikethrough~~.
 `;
 
     return prompt;
@@ -384,19 +568,28 @@ Begin your work on the highest priority task from ralph.yml.
     this.log('INFO', `Executing Claude Code (iteration ${iteration})...`);
 
     const outputFile = path.join(this.paths.historyDir, `claude_output_${iteration}.json`);
-    
+
     try {
-      // Build command
-      const args = ['--dangerously-skip-permissions', '--output-format', 'json'];
-      
-      // Read prompt and execute
-      const promptText = fs.readFileSync(promptFile, 'utf8');
-      const cmd = `${CONFIG.CLAUDE_CMD} ${args.join(' ')} -p "${promptText.replace(/"/g, '\\"')}"`;
-      
+      // Build command - pipe prompt file through stdin
+      const args = [
+        '--dangerously-skip-permissions',
+        '--output-format', 'json',
+        '-p', '"Follow instructions and start working!"'
+      ];
+
+      // Use shell to pipe the file content to claude
+      // This mimics: cat prompt.md | claude --args -p "work on this"
+      const isWindows = process.platform === 'win32';
+      const catCmd = isWindows ? 'type' : 'cat';
+      const cmd = `${catCmd} "${promptFile}" | ${CONFIG.CLAUDE_CMD} ${args.join(' ')}`;
+
+      this.log('INFO', `Executing: ${cmd}`);
+
       const output = execSync(cmd, {
         encoding: 'utf8',
         maxBuffer: 10 * 1024 * 1024,
-        timeout: CONFIG.CLAUDE_TIMEOUT_MINUTES * 60 * 1000
+        timeout: CONFIG.CLAUDE_TIMEOUT_MINUTES * 60 * 1000,
+        shell: true // Important for pipe to work
       });
 
       fs.writeFileSync(outputFile, output);
@@ -408,6 +601,12 @@ Begin your work on the highest priority task from ralph.yml.
       return true;
     } catch (error) {
       this.log('ERROR', `Claude Code failed: ${error.message}`);
+      if (error.stdout) {
+        this.log('ERROR', `stdout: ${error.stdout}`);
+      }
+      if (error.stderr) {
+        this.log('ERROR', `stderr: ${error.stderr}`);
+      }
       return false;
     }
   }
@@ -418,28 +617,43 @@ Begin your work on the highest priority task from ralph.yml.
   createCheckpoint(iteration, sessionId) {
     const timestamp = new Date().toISOString().replace(/:/g, '-').split('.')[0];
     const checkpointFile = path.join(this.paths.checkpointsDir, `checkpoint_${timestamp}.txt`);
-    
+
+    // Ensure checkpoints directory exists
+    if (!fs.existsSync(this.paths.checkpointsDir)) {
+      fs.mkdirSync(this.paths.checkpointsDir, { recursive: true });
+    }
+
     const scratchpadPreview = fs.existsSync(this.paths.scratchpadFile)
       ? fs.readFileSync(this.paths.scratchpadFile, 'utf8').split('\n').slice(-20).join('\n')
       : 'See scratchpad.md';
+
+    // Get state values safely
+    const completedTasks = this.getState('tasks.completed_tasks');
+    const completedCount = Array.isArray(completedTasks) ? completedTasks.length : 0;
+    const completionPct = this.getState('tasks.completion_percentage') || 0;
+    const loopState = this.getState('loop.state') || 'unknown';
 
     const checkpointContent = `Ralph Loop Checkpoint
 =====================
 Time: ${new Date().toISOString()}
 Iteration: ${iteration}
 Session: ${sessionId}
-State: ${this.getState('loop.state')}
+State: ${loopState}
 
 Project Status:
-- Tasks Completed: ${this.getState('tasks.completed_tasks')?.length || 0}
-- Completion: ${this.getState('tasks.completion_percentage')}%
+- Tasks Completed: ${completedCount}
+- Completion: ${completionPct}%
 
 Next Steps:
 ${scratchpadPreview}
 `;
 
-    fs.writeFileSync(checkpointFile, checkpointContent);
-    this.log('SUCCESS', `Checkpoint created: ${checkpointFile}`);
+    try {
+      fs.writeFileSync(checkpointFile, checkpointContent);
+      this.log('SUCCESS', `Checkpoint created: ${path.basename(checkpointFile)}`);
+    } catch (error) {
+      this.log('ERROR', `Failed to create checkpoint: ${error.message}`);
+    }
   }
 
   /**
@@ -493,9 +707,13 @@ ${scratchpadPreview}
 
       // Parse output
       const outputFile = path.join(this.paths.historyDir, `claude_output_${iteration}.json`);
-      const status = this.parseRalphStatus(outputFile);
+      const ralphStatus = this.parseRalphStatus(outputFile);
+      const apiMetrics = this.parseClaudeOutput(outputFile);
 
-      if (status.exitSignal) {
+      // Display iteration summary
+      this.displayIterationSummary(iteration, ralphStatus, apiMetrics);
+
+      if (ralphStatus.exitSignal) {
         const count = this.getState('exit_conditions.completion_indicators') + 1;
         this.updateState('exit_conditions.completion_indicators', count);
         this.log('INFO', `Exit signal received (${count}/2)`);
