@@ -1,14 +1,21 @@
 //! AI-optimized grep utility
 //!
 //! Searches for patterns in files with structured JSONL output.
+//! Supports async concurrent file processing.
 
-use ai_coreutils::{jsonl::JsonlRecord, memory::SafeMemoryAccess, Result};
+use ai_coreutils::{
+    async_ops::{async_grep_file, async_walk_dir, AsyncConfig},
+    jsonl::JsonlRecord,
+    memory::SafeMemoryAccess,
+    Result,
+};
 use clap::Parser;
+use futures::stream::{self, StreamExt};
 use std::path::PathBuf;
 use walkdir::WalkDir;
 
 /// AI-optimized grep: Search files with JSONL output
-#[derive(Parser, Debug)]
+#[derive(Parser, Debug, Clone)]
 #[command(name = "ai-grep")]
 #[command(about = "AI-optimized grep with structured output", long_about = None)]
 struct Cli {
@@ -22,6 +29,14 @@ struct Cli {
     /// Recursive directory search
     #[arg(short, long)]
     recursive: bool,
+
+    /// Enable async concurrent file processing
+    #[arg(short = 'a', long)]
+    async_mode: bool,
+
+    /// Maximum concurrent operations in async mode
+    #[arg(short = 'j', long, default_value_t = 10)]
+    max_concurrent: usize,
 
     /// Show line numbers
     #[arg(short = 'n', long)]
@@ -79,20 +94,32 @@ struct Cli {
 fn main() -> Result<()> {
     let cli = Cli::parse();
 
+    // Determine if we should use async mode
+    let use_async = cli.async_mode && (cli.recursive || cli.paths.len() > 1);
+
+    if use_async {
+        let rt = tokio::runtime::Runtime::new()?;
+        rt.block_on(async_main(cli))
+    } else {
+        sync_main(cli)
+    }
+}
+
+fn sync_main(cli: Cli) -> Result<()> {
     for path in &cli.paths {
         if path.is_dir() {
             if cli.recursive {
                 if let Err(e) = grep_directory(path, &cli) {
                     let error_record = JsonlRecord::error(
                         format!("Failed to search directory {}: {}", path.display(), e),
-                        "GREP_ERROR"
+                        "GREP_ERROR",
                     );
                     println!("{}", error_record.to_jsonl()?);
                 }
             } else {
                 let error_record = JsonlRecord::error(
                     format!("{} is a directory (use -r for recursive search)", path.display()),
-                    "GREP_ERROR"
+                    "GREP_ERROR",
                 );
                 println!("{}", error_record.to_jsonl()?);
             }
@@ -100,10 +127,67 @@ fn main() -> Result<()> {
             if let Err(e) = grep_file(path, &cli) {
                 let error_record = JsonlRecord::error(
                     format!("Failed to search {}: {}", path.display(), e),
-                    "GREP_ERROR"
+                    "GREP_ERROR",
                 );
                 println!("{}", error_record.to_jsonl()?);
             }
+        }
+    }
+
+    Ok(())
+}
+
+async fn async_main(cli: Cli) -> Result<()> {
+    let config = AsyncConfig {
+        max_concurrent: cli.max_concurrent,
+        buffer_size: 8192,
+        progress: false,
+    };
+
+    // Collect all files to search
+    let mut all_files = Vec::new();
+
+    for path in &cli.paths {
+        if path.is_dir() && cli.recursive {
+            // Use async directory walking
+            let dir_files = async_walk_dir(path).await?;
+            all_files.extend(dir_files);
+        } else if path.is_file() {
+            all_files.push(path.clone());
+        }
+    }
+
+    // Process files concurrently
+    let pattern = cli.pattern.clone();
+    let case_insensitive = cli.ignore_case;
+    let invert_match = cli.invert_match;
+
+    let results = stream::iter(all_files)
+        .map(|file| {
+            let pattern = pattern.clone();
+            async move {
+                let matches = async_grep_file(&file, &pattern, case_insensitive, invert_match)
+                    .await
+                    .unwrap_or_default();
+                (file, matches)
+            }
+        })
+        .buffer_unordered(config.max_concurrent)
+        .collect::<Vec<_>>()
+        .await;
+
+    // Output results
+    for (path, matches) in results {
+        for m in matches {
+            let record = JsonlRecord::MatchRecord {
+                timestamp: chrono::Utc::now(),
+                file: path.display().to_string(),
+                line_number: m.line_number,
+                line_content: m.line,
+                match_start: 0,
+                match_end: 0,
+            };
+            println!("{}", record.to_jsonl()?);
         }
     }
 
@@ -138,7 +222,11 @@ fn grep_file(path: &PathBuf, cli: &Cli) -> Result<bool> {
         };
 
         let line_matches = search_line.contains(&search_pattern);
-        let should_show = if cli.invert_match { !line_matches } else { line_matches };
+        let should_show = if cli.invert_match {
+            !line_matches
+        } else {
+            line_matches
+        };
 
         if should_show && line_matches {
             match_count += 1;
@@ -188,7 +276,11 @@ fn grep_file(path: &PathBuf, cli: &Cli) -> Result<bool> {
                     let record = JsonlRecord::MatchRecord {
                         timestamp: chrono::Utc::now(),
                         file: path.display().to_string(),
-                        line_number: if cli.line_number { line_num + 1 } else { 0 },
+                        line_number: if cli.line_number {
+                            line_num + 1
+                        } else {
+                            0
+                        },
                         line_content: output_line,
                         match_start,
                         match_end,
@@ -202,7 +294,11 @@ fn grep_file(path: &PathBuf, cli: &Cli) -> Result<bool> {
 
                     // Output context before
                     if before > 0 && line_num > 0 {
-                        let start = if line_num > before { line_num - before } else { 0 };
+                        let start = if line_num > before {
+                            line_num - before
+                        } else {
+                            0
+                        };
                         for ctx_line in lines[start..line_num].iter() {
                             let record = JsonlRecord::MatchRecord {
                                 timestamp: chrono::Utc::now(),
@@ -218,7 +314,11 @@ fn grep_file(path: &PathBuf, cli: &Cli) -> Result<bool> {
 
                     // Output context after
                     if after > 0 && line_num + after < lines.len() {
-                        let end = if line_num + after + 1 < lines.len() { line_num + after + 1 } else { lines.len() };
+                        let end = if line_num + after + 1 < lines.len() {
+                            line_num + after + 1
+                        } else {
+                            lines.len()
+                        };
                         for ctx_line in lines[line_num + 1..end].iter() {
                             let record = JsonlRecord::MatchRecord {
                                 timestamp: chrono::Utc::now(),
@@ -275,9 +375,7 @@ fn grep_file(path: &PathBuf, cli: &Cli) -> Result<bool> {
 }
 
 fn grep_directory(dir: &PathBuf, cli: &Cli) -> Result<()> {
-    let walker = WalkDir::new(dir)
-        .follow_links(true)
-        .into_iter();
+    let walker = WalkDir::new(dir).follow_links(true).into_iter();
 
     for entry in walker.filter_map(|e| e.ok()) {
         let path = entry.path();
@@ -286,7 +384,7 @@ fn grep_directory(dir: &PathBuf, cli: &Cli) -> Result<()> {
             if let Err(e) = grep_file(&path.to_path_buf(), cli) {
                 let error_record = JsonlRecord::error(
                     format!("Failed to search {}: {}", path.display(), e),
-                    "GREP_ERROR"
+                    "GREP_ERROR",
                 );
                 println!("{}", error_record.to_jsonl()?);
             }

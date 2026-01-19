@@ -1,0 +1,24 @@
+[package]
+name = "ai-coreutils-nodejs"
+version = "0.1.0"
+edition = "2021"
+authors = ["AI-Coreutils Contributors"]
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+# Import ai-coreutils as a path dependency
+ai-coreutils = { path = ".." }
+
+# NAPI-RS for Node.js bindings
+napi = { version = "2.0", features = ["async"] }
+napi-derive = "2.0"
+
+[build-dependencies]
+napi-build = "2.0"
+
+[profile.release]
+lto = true
+codegen-units = 1
+strip = true

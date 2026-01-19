@@ -15,7 +15,7 @@ STATE_FILE="$RALPH_DIR/state.json"
 RALPH_YML="$RALPH_DIR/ralph.yml"
 SESSION_FILE="$RALPH_DIR/session.md"
 SCRATCHPAD_FILE="$RALPH_DIR/scratchpad.md"
-PROMPT_FILE="$RALPH_DIR/prompt.md"
+PROMPT_FILE_MD="$RALPH_DIR/prompt.md"
 CLAUDE_MD="$PROJECT_ROOT/CLAUDE.md"
 SPEC_MD="$PROJECT_ROOT/spec.md"
 
@@ -295,6 +295,7 @@ build_prompt() {
     # Note: Using 'sed' for the project name because jq cannot read YAML files directly
     local project_name=$(grep "name:" "$RALPH_YML" | head -1 | cut -d':' -f2 | xargs || echo "Project")
     
+    prompt_content=$(cat "$PROMPT_FILE_MD")
     prompt_content="${prompt_content//\{\{PROJECT_NAME\}\}/$project_name}"
     prompt_content="${prompt_content//\{\{ITERATION\}\}/$iteration}"
     prompt_content="${prompt_content//\{\{SESSION_ID\}\}/$session_id}"
@@ -336,7 +337,9 @@ execute_claude() {
     local output_file="$HISTORY_DIR/claude_output_${iteration}.json"
     
     # Read the prompt into a variable first to ensure it's clean
-    local prompt_text=$(cat "$prompt_file")
+    local prompt_text=()
+    #local prompt_text+=$(cat "$PROMPT_FILE_MD")
+    local prompt_text+=$(cat "$prompt_file")
 
     # Build Claude command args
     local claude_args=()
@@ -415,7 +418,11 @@ main() {
         fi
 
         # Build prompt
+        #local prompt_file()
         local prompt_file="$HISTORY_DIR/prompt_${iteration}.md"
+        #local prompt_file+=$(cat "$PROMPT_FILE_MD")
+        #local prompt_file+=$(cat "$history_prompt_file")
+
         build_prompt "$iteration" "$session_id" > "$prompt_file"
 
         # Execute Claude

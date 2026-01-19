@@ -1,0 +1,47 @@
+{
+  "name": "ai-coreutils",
+  "version": "0.1.0",
+  "description": "AI-optimized core utilities for Node.js with SIMD and ML",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "napi": {
+    "name": "ai-coreutils",
+    "triples": {
+      "defaults": true,
+      "additional": [
+        "x86_64-pc-windows-msvc",
+        "x86_64-unknown-linux-gnu",
+        "aarch64-apple-darwin",
+        "x86_64-apple-darwin"
+      ]
+    }
+  },
+  "license": "MIT OR Apache-2.0",
+  "devDependencies": {
+    "@napi-rs/cli": "^2.18.0"
+  },
+  "engines": {
+    "node": ">= 16"
+  },
+  "scripts": {
+    "artifacts": "napi artifacts",
+    "build": "napi build --platform --release",
+    "build:debug": "napi build --platform",
+    "prepublishOnly": "napi prepublish -t npm",
+    "test": "node test/test.js",
+    "version": "napi version"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-org/ai-coreutils"
+  },
+  "keywords": [
+    "coreutils",
+    "ai",
+    "simd",
+    "memory",
+    "file",
+    "utilities",
+    "cli"
+  ]
+}

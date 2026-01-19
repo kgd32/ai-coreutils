@@ -54,6 +54,16 @@ uuid = { version = "1.6", features = ["v4"] }
 # Time handling
 chrono = { version = "0.4", features = ["serde"] }
 
+# Regex for pattern matching
+regex = "1.10"
+
+# Python bindings (optional)
+pyo3 = { version = "0.22", features = ["extension-module"], optional = true }
+
+[features]
+default = []
+python = ["pyo3"]
+
 [dev-dependencies]
 tempfile = "3.8"
 criterion = { version = "0.5", features = ["html_reports"] }
@@ -121,6 +131,10 @@ path = "src/bin/ai-chmod.rs"
 [[bin]]
 name = "ai-chown"
 path = "src/bin/ai-chown.rs"
+
+[[bin]]
+name = "ai-analyze"
+path = "src/bin/ai-analyze.rs"
 
 [[bench]]
 name = "memory_access"
