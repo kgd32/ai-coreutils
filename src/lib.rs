@@ -6,12 +6,15 @@
 #![warn(missing_docs)]
 #![warn(clippy::all)]
 
+pub mod async_ops;
 pub mod error;
 pub mod jsonl;
 pub mod memory;
 pub mod fs_utils;
+pub mod simd_ops;
 
 // Re-export commonly used types
 pub use error::{AiCoreutilsError, Result};
 pub use jsonl::{JsonlOutput, JsonlRecord};
 pub use memory::SafeMemoryAccess;
+pub use simd_ops::{SimdConfig, SimdPatternSearcher, SimdByteCounter, SimdTextProcessor, TextMetrics};

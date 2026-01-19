@@ -23,6 +23,7 @@ memmap2 = "0.9.0"
 
 # Async runtime
 tokio = { version = "1.35", features = ["full"] }
+futures = "0.3"
 
 # Directory traversal
 walkdir = "2.4"
@@ -127,6 +128,10 @@ harness = false
 
 [[bench]]
 name = "jsonl_output"
+harness = false
+
+[[bench]]
+name = "simd_performance"
 harness = false
 
 [profile.release]

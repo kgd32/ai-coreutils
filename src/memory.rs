@@ -3,6 +3,7 @@
 //! Provides safe memory access with pointer operations for large files.
 
 use crate::error::{AiCoreutilsError, Result};
+use crate::simd_ops::{SimdByteCounter, SimdPatternSearcher, SimdTextProcessor};
 use memmap2::Mmap;
 use std::fs::File;
 use std::path::Path;
@@ -11,6 +12,9 @@ use std::path::Path;
 pub struct SafeMemoryAccess {
     mmap: Mmap,
     size: usize,
+    pattern_searcher: SimdPatternSearcher,
+    byte_counter: SimdByteCounter,
+    text_processor: SimdTextProcessor,
 }
 
 impl SafeMemoryAccess {
@@ -44,7 +48,13 @@ impl SafeMemoryAccess {
                 .map_err(|e| AiCoreutilsError::MemoryAccess(format!("Failed to map file: {}", e)))?
         };
 
-        Ok(Self { mmap, size })
+        Ok(Self {
+            mmap,
+            size,
+            pattern_searcher: SimdPatternSearcher::new(),
+            byte_counter: SimdByteCounter::new(),
+            text_processor: SimdTextProcessor::new(),
+        })
     }
 
     /// Get the size of the memory-mapped region
@@ -91,7 +101,7 @@ impl SafeMemoryAccess {
         }
     }
 
-    /// Search for a pattern in the memory-mapped region
+    /// Search for a pattern in the memory-mapped region (SIMD-accelerated)
     ///
     /// # Arguments
     /// * `pattern` - Byte pattern to search for
@@ -103,24 +113,22 @@ impl SafeMemoryAccess {
             return Vec::new();
         }
 
-        let mut matches = Vec::new();
-        let mut search_offset = 0;
-
-        while search_offset + pattern.len() <= self.size {
-            if let Some(window) = self.get(search_offset, pattern.len()) {
-                if window == pattern {
-                    matches.push(search_offset);
-                }
-            }
-            search_offset += 1;
-        }
-
-        matches
+        // Use SIMD-accelerated pattern search
+        self.pattern_searcher.find_all(&self.mmap, pattern)
     }
 
-    /// Count occurrences of a byte in the memory-mapped region
+    /// Count occurrences of a byte in the memory-mapped region (SIMD-accelerated)
     pub fn count_byte(&self, byte: u8) -> usize {
-        self.mmap.iter().filter(|&&b| b == byte).count()
+        self.byte_counter.count(&self.mmap, byte)
+    }
+
+    /// Count lines, words, and bytes in the memory-mapped region (SIMD-accelerated)
+    ///
+    /// # Returns
+    /// Tuple of (lines, words, bytes)
+    pub fn count_text_metrics(&self) -> (usize, usize, usize) {
+        let metrics = self.text_processor.analyze(&self.mmap);
+        (metrics.lines, metrics.words, metrics.bytes)
     }
 
     /// Create a SafeMemoryAccess from a vector (for testing)
@@ -141,6 +149,9 @@ impl SafeMemoryAccess {
         Ok(Self {
             size: data.len(),
             mmap,
+            pattern_searcher: SimdPatternSearcher::new(),
+            byte_counter: SimdByteCounter::new(),
+            text_processor: SimdTextProcessor::new(),
         })
     }
 }
@@ -216,5 +227,18 @@ mod tests {
         let access = SafeMemoryAccess::new(temp_file.path()).unwrap();
         assert_eq!(access.count_byte(b'l'), 3);
         assert_eq!(access.count_byte(b'x'), 0);
+    }
+
+    #[test]
+    fn test_count_text_metrics() {
+        let mut temp_file = NamedTempFile::new().unwrap();
+        temp_file.write_all(b"Hello world\nThis is a test\n").unwrap();
+
+        let access = SafeMemoryAccess::new(temp_file.path()).unwrap();
+        let (lines, words, bytes) = access.count_text_metrics();
+
+        assert_eq!(lines, 2);
+        assert_eq!(words, 6);
+        assert_eq!(bytes, 27);
     }
 }

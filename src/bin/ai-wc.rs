@@ -140,7 +140,7 @@ fn count_file(file: &PathBuf, cli: &Cli) -> Result<Counts> {
     count_bytes(&buffer, cli)
 }
 
-fn count_mmap(mmap: &SafeMemoryAccess, cli: &Cli) -> Result<Counts> {
+fn count_mmap(mmap: &SafeMemoryAccess, _cli: &Cli) -> Result<Counts> {
     let size = mmap.size();
     let data = if let Some(d) = mmap.get(0, size) {
         d
@@ -148,7 +148,28 @@ fn count_mmap(mmap: &SafeMemoryAccess, cli: &Cli) -> Result<Counts> {
         return Ok(Counts::default());
     };
 
-    count_bytes(data, cli)
+    // Use SIMD-accelerated text metrics for basic counts
+    let (lines, words, bytes) = mmap.count_text_metrics();
+
+    let mut counts = Counts::default();
+    counts.lines = lines;
+    counts.words = words;
+    counts.bytes = bytes;
+    counts.chars = bytes; // For ASCII, chars == bytes
+
+    // Still need to calculate max line length
+    let mut current_line_length = 0;
+    for &byte in data.iter() {
+        if byte == b'\n' {
+            counts.max_line_length = counts.max_line_length.max(current_line_length);
+            current_line_length = 0;
+        } else if byte != b'\r' {
+            current_line_length += 1;
+        }
+    }
+    counts.max_line_length = counts.max_line_length.max(current_line_length);
+
+    Ok(counts)
 }
 
 fn count_bytes(data: &[u8], _cli: &Cli) -> Result<Counts> {
