@@ -101,7 +101,7 @@ fn main() -> Result<()> {
         };
 
         if let Err(e) = move_path(source, &dest, &cli, &mut stats) {
-            stats.errors += 1;
+            // stats.errors += 1; // Error is already returned below
             let error_record = JsonlRecord::error(
                 format!("Failed to move {}: {}", source.display(), e),
                 "MV_ERROR"

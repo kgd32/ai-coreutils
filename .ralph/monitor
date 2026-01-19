@@ -1,0 +1,4 @@
+#!/bin/bash
+# Wrapper script - uses RALPH_HOME
+export RALPH_HOME="${RALPH_HOME:-/c/Users/Kimpa/Documents/Vibe/ai-coreutils}"
+exec "$RALPH_HOME/.ralph/monitor.sh" "$@"

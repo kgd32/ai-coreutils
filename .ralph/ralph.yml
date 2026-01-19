@@ -1,0 +1,291 @@
+
+## 3. ralph.yml
+
+```yaml
+project:
+  name: "AI-Coreutils"
+  description: "Modern core utilities for AI agents with JSONL output and memory access"
+  version: "0.1.0"
+  repository: "https://github.com/your-org/ai-coreutils"
+  
+  metadata:
+    tech_stack: "Rust, memmap2, serde_json, clap, tokio"
+    target_platforms: "Linux, macOS, Windows"
+    deployment: "crates.io, GitHub releases, Docker"
+  
+  objectives:
+    - "Reimplement core utilities with AI optimizations"
+    - "Provide structured JSONL output"
+    - "Enable safe memory pointer access"
+    - "Maintain GNU compatibility"
+
+tasks:
+  # PHASE 1: MVP TASKS
+  
+  - id: "setup-project"
+    title: "Project Setup & Architecture"
+    description: |
+      Initialize Rust project with proper structure and dependencies
+    priority: "critical"
+    status: "done"
+    dependencies: []
+    acceptance_criteria:
+      - "Cargo.toml configured with all dependencies"
+      - "Project structure created"
+      - "CI/CD pipeline configured"
+      - "Initial README written"
+    subtasks:
+      - "Create Cargo.toml with dependencies"
+      - "Set up project directory structure"
+      - "Configure GitHub Actions"
+      - "Write initial README"
+    estimated_hours: 4
+    notes: "Completed 2026-01-18: Cargo.toml configured, src/ structure created, stub binaries created"
+  
+  - id: "implement-memory-layer"
+    title: "Memory Access Layer"
+    description: |
+      Implement safe memory access with pointer operations
+    priority: "critical"
+    status: "done"
+    dependencies: ["setup-project"]
+    acceptance_criteria:
+      - "SafeMemoryAccess struct implemented"
+      - "Memory mapping for large files"
+      - "Bounds checking for all operations"
+      - "Comprehensive tests"
+    subtasks:
+      - "Implement SafeMemoryAccess struct"
+      - "Add memory mapping support"
+      - "Implement bounds checking"
+      - "Write tests"
+    estimated_hours: 8
+    notes: "Completed 2026-01-18: SafeMemoryAccess implemented with memmap2, bounds checking, pattern search, and tests"
+  
+  - id: "implement-jsonl-output"
+    title: "JSONL Output Formatter"
+    description: |
+      Create structured JSONL output for all operations
+    priority: "critical"
+    status: "done"
+    dependencies: ["setup-project"]
+    acceptance_criteria:
+      - "JSONL formatter implemented"
+      - "Error output in JSONL format"
+      - "Binary data encoding support"
+      - "Performance benchmarks"
+    subtasks:
+      - "Create JSONL output module"
+      - "Implement error formatting"
+      - "Add binary data support"
+      - "Benchmark performance"
+    estimated_hours: 6
+    notes: "Completed 2026-01-18: JSONL output implemented with multiple record types, error formatting, and benchmarks"
+  
+  - id: "implement-ai-ls"
+    title: "AI-optimized ls utility"
+    description: |
+      Implement ls with JSONL output and memory optimizations
+    priority: "critical"
+    status: "done"
+    dependencies: ["implement-memory-layer", "implement-jsonl-output"]
+    acceptance_criteria:
+      - "Basic ls functionality"
+      - "JSONL output format"
+      - "Memory-efficient directory traversal"
+      - "GNU ls compatibility"
+    subtasks:
+      - "Implement directory traversal"
+      - "Add JSONL output"
+      - "Implement file metadata extraction"
+      - "Add GNU compatibility options"
+    estimated_hours: 10
+  
+  - id: "implement-ai-cat"
+    title: "AI-optimized cat utility"
+    description: |
+      Implement cat with memory mapping and JSONL output
+    priority: "critical"
+    status: "done"
+    dependencies: ["implement-memory-layer", "implement-jsonl-output"]
+    acceptance_criteria:
+      - "Basic cat functionality"
+      - "Memory mapping for large files"
+      - "JSONL output with metadata"
+      - "Pointer access option"
+    subtasks:
+      - "Implement file reading"
+      - "Add memory mapping"
+      - "Implement JSONL output"
+      - "Add pointer access mode"
+    estimated_hours: 8
+  
+  - id: "implement-ai-grep"
+    title: "AI-optimized grep utility"
+    description: |
+      Implement grep with structured output and AI enhancements
+    priority: "critical"
+    status: "done"
+    dependencies: ["implement-memory-layer", "implement-jsonl-output"]
+    acceptance_criteria:
+      - "Basic grep functionality"
+      - "JSONL results with context"
+      - "Memory-efficient searching"
+      - "Pattern detection hints"
+    subtasks:
+      - "Implement pattern matching"
+      - "Add JSONL result format"
+      - "Implement streaming search"
+      - "Add AI pattern hints"
+    estimated_hours: 12
+    notes: "Completed 2026-01-19: Full GNU grep compatibility with AI enhancements, recursive search (-r), context (-A, -B, -C), invert match (-v), files with matches (-l), only matching (-o), line numbers (-n), count (-c), case insensitive (-i), fixed strings (-F), extended regex (-E)"
+  
+  # PHASE 2: ENHANCED FEATURES
+  
+  - id: "implement-remaining-utils"
+    title: "Complete Core Utilities"
+    description: |
+      Implement remaining GNU core utilities with AI optimizations
+    priority: "high"
+    status: "in-progress"
+    dependencies: ["implement-ai-ls", "implement-ai-cat", "implement-ai-grep"]
+    acceptance_criteria:
+      - "All core utilities implemented"
+      - "Consistent JSONL output"
+      - "Performance benchmarks"
+      - "Documentation complete"
+    subtasks:
+      - "Implement find, mv, cp, rm"
+      - "Implement mkdir, rmdir, touch"
+      - "Implement chmod, chown"
+      - "Implement head, tail, wc"
+    estimated_hours: 40
+    notes: "Started 2026-01-19: Beginning implementation of remaining utilities. Starting with touch, mkdir, rmdir (simple ones), then head, tail, wc (moderate), then find, cp, mv, rm, chmod, chown (complex).
+    Updated 2026-01-19 (Iteration 3): Fixed compilation errors in ai-head, ai-tail, ai-touch, ai-mkdir, ai-rmdir. Added jsonl helper functions (output_error, output_result, output_info, output_progress). Fixed Cargo.toml to comment out stub binaries. Implemented ai-wc (word count) utility with GNU compatibility."
+  
+  - id: "add-async-support"
+    title: "Async Operations Support"
+    description: |
+      Add async/await support for concurrent operations
+    priority: "high"
+    status: "todo"
+    dependencies: ["implement-remaining-utils"]
+    acceptance_criteria:
+      - "Async API implemented"
+      - "Concurrent file operations"
+      - "Async CLI options"
+      - "Performance improvements"
+    subtasks:
+      - "Refactor to async where beneficial"
+      - "Implement concurrent operations"
+      - "Add async CLI flags"
+      - "Benchmark improvements"
+    estimated_hours: 20
+  
+  # PHASE 3: POLISH & SCALE
+  
+  - id: "optimize-performance"
+    title: "Performance Optimization"
+    description: |
+      SIMD optimizations and performance tuning
+    priority: "medium"
+    status: "todo"
+    dependencies: ["add-async-support"]
+    acceptance_criteria:
+      - "SIMD optimizations where applicable"
+      - "Benchmarks meet targets"
+      - "Memory usage optimized"
+      - "Profiling complete"
+    subtasks:
+      - "Add SIMD for text processing"
+      - "Optimize memory usage"
+      - "Profile bottlenecks"
+      - "Tune performance"
+    estimated_hours: 24
+  
+  - id: "add-ml-integration"
+    title: "Machine Learning Integration"
+    description: |
+      Add AI-powered pattern detection and analysis
+    priority: "medium"
+    status: "todo"
+    dependencies: ["optimize-performance"]
+    acceptance_criteria:
+      - "Pattern detection API"
+      - "ML model integration"
+      - "Intelligent file operations"
+      - "Analysis reports"
+    subtasks:
+      - "Integrate OpenAI API"
+      - "Implement pattern detection"
+      - "Add analysis features"
+      - "Create ML utilities"
+    estimated_hours: 32
+  
+  - id: "create-bindings"
+    title: "Cross-language Bindings"
+    description: |
+      Create Python and Node.js bindings
+    priority: "low"
+    status: "todo"
+    dependencies: ["add-ml-integration"]
+    acceptance_criteria:
+      - "Python bindings via PyO3"
+      - "Node.js bindings via NAPI-RS"
+      - "Documentation for bindings"
+      - "Examples for each language"
+    subtasks:
+      - "Create Python bindings"
+      - "Create Node.js bindings"
+      - "Write documentation"
+      - "Create examples"
+    estimated_hours: 40
+
+workflows:
+  - name: "daily-development"
+    description: "Standard development workflow"
+    steps:
+      - "cargo check"
+      - "cargo test"
+      - "cargo clippy"
+      - "cargo fmt"
+      - "git commit"
+  
+  - name: "release-process"
+    description: "How to cut a new release"
+    steps:
+      - "Update version in Cargo.toml"
+      - "cargo test"
+      - "cargo build --release"
+      - "git tag v{version}"
+      - "cargo publish"
+      - "Create GitHub release"
+
+dependencies:
+  - "memmap2 >= 0.9.0"
+  - "serde_json >= 1.0"
+  - "clap >= 4.0"
+  - "tokio >= 1.0"
+  - "walkdir >= 2.0"
+  - "thiserror >= 1.0"
+  - "anyhow >= 1.0"
+
+testing:
+  framework: "cargo test"
+  coverage: "cargo tarpaulin"
+  benchmarks: "cargo criterion"
+
+deployment:
+  - "crates.io publishing"
+  - "GitHub releases"
+  - "Docker images"
+
+monitoring:
+  - "Performance benchmarks"
+  - "Test coverage"
+  - "CI/CD status"
+
+community:
+  contribution_guide: "CONTRIBUTING.md"
+  code_of_conduct: "CODE_OF_CONDUCT.md"
+  issue_template: ".github/ISSUE_TEMPLATE.md"

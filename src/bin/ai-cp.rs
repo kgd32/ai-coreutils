@@ -127,7 +127,7 @@ fn main() -> Result<()> {
         };
 
         if let Err(e) = copy_path(source, &dest, &cli, &mut stats) {
-            stats.errors += 1;
+            // stats.errors += 1; // Error is already returned below
             let error_record = JsonlRecord::error(
                 format!("Failed to copy {}: {}", source.display(), e),
                 "CP_ERROR"

@@ -5,8 +5,7 @@
 use ai_coreutils::jsonl;
 use ai_coreutils::Result;
 use clap::Parser;
-use std::fs;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 
 /// AI-optimized chown: Change ownership with JSONL output
 #[derive(Parser, Debug)]
@@ -36,7 +35,9 @@ struct Cli {
 
 #[derive(Debug, Clone)]
 struct OwnerSpec {
+    #[allow(dead_code)]
     uid: Option<u32>,
+    #[allow(dead_code)]
     gid: Option<u32>,
 }
 
@@ -57,7 +58,7 @@ fn main() -> Result<()> {
     };
 
     // Parse the owner specification
-    let owner_spec = parse_owner(&cli.owner)?;
+    let _owner_spec = parse_owner(&cli.owner)?;
 
     #[cfg(unix)]
     {

@@ -85,6 +85,7 @@ fn main() -> Result<()> {
 #[derive(Debug, Clone)]
 enum ModeSpec {
     Absolute(u32),
+    #[allow(dead_code)]
     Symbolic {
         who: Option<char>,
         op: char,
@@ -259,6 +260,7 @@ fn change_permissions(
     Ok(())
 }
 
+#[allow(dead_code)]
 fn calculate_new_mode(current_mode: u32, mode_spec: &ModeSpec) -> Result<u32> {
     match mode_spec {
         ModeSpec::Absolute(mode) => {
