@@ -64,7 +64,7 @@ struct Cli {
     no_clobber: bool,
 
     /// Output JSONL (always enabled for AI-Coreutils)
-    #[arg(short, long, default_value_t = true)]
+    #[arg(long, default_value_t = true)]
     json: bool,
 }
 

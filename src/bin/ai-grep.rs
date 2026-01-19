@@ -87,7 +87,7 @@ struct Cli {
     context: Option<usize>,
 
     /// Output JSONL (always enabled for AI agents)
-    #[arg(short, long, default_value_t = true)]
+    #[arg(long, default_value_t = true)]
     json: bool,
 }
 

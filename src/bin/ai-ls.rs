@@ -25,7 +25,7 @@ struct Cli {
     long: bool,
 
     /// Human-readable sizes
-    #[arg(short, long)]
+    #[arg(long)]
     human_readable: bool,
 
     /// Recursive listing
@@ -45,7 +45,7 @@ struct Cli {
     reverse: bool,
 
     /// Output JSONL (always enabled for AI agents)
-    #[arg(short, long, default_value_t = true)]
+    #[arg(long, default_value_t = true)]
     json: bool,
 }
 

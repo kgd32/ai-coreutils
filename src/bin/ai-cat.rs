@@ -42,7 +42,7 @@ struct Cli {
     show_tabs: bool,
 
     /// Squeeze multiple blank lines
-    #[arg(short, long)]
+    #[arg(long)]
     squeeze_blank: bool,
 
     /// Show memory pointer (for AI agent memory access)
@@ -58,7 +58,7 @@ struct Cli {
     max_concurrent: usize,
 
     /// Output JSONL (always enabled for AI-Coreutils agents)
-    #[arg(short, long, default_value_t = true)]
+    #[arg(long, default_value_t = true)]
     json: bool,
 }
 

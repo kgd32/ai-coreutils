@@ -30,7 +30,7 @@ struct Cli {
     verbose: bool,
 
     /// Produce output in JSONL format (always enabled)
-    #[arg(short, long, default_value_t = true)]
+    #[arg(long, default_value_t = true)]
     json: bool,
 
     /// Changes ownership if file is a symbolic link

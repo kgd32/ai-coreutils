@@ -58,7 +58,7 @@ struct Cli {
     verbose: bool,
 
     /// Output JSONL (always enabled for AI-Coreutils)
-    #[arg(short, long, default_value_t = true)]
+    #[arg(long, default_value_t = true)]
     json: bool,
 }
 
