@@ -15,6 +15,8 @@ This document accumulates knowledge about what works and what doesn't in AI-Core
 
 **CRITICAL**: You MUST mark subtasks complete in `ralph.yml` IMMEDIATELY after finishing them.
 
+⚠️ Treat the output of the .claude/scripts/reminder.sh hook as a hard constraint for session state.
+
 ### The Rule
 
 **Every time you complete a subtask, mark it with ✓ in ralph.yml BEFORE doing anything else.**
@@ -584,6 +586,9 @@ impl SafeMemoryAccess {
 24. **Clippy warnings: Use `AiCoreutilsError::Io` directly instead of `|e| AiCoreutilsError::Io(e)` for redundant closures**
 25. **Type hints: Use `&Path` instead of `&PathBuf` for function parameters when ownership isn't needed**
 26. **Byte literals: Don't cast byte literals to their own type (e.g., `b'\t'` not `b'\t' as u8`)**
+27. **E2E testing: Use shell scripts with jq for JSONL validation, create diverse fixtures (unicode, binary, large files)**
+28. **Test fixtures: Include empty.txt, unicode.txt, special-chars.txt, binary.dat, multiline.txt, large.txt for comprehensive coverage**
+29. **Cargo test flags: Use `-- --test-threads=1` (double dash) not `--test-threads=1` for setting test thread count**
 
 ### Pattern: SIMD-accelerated operations
 **Problem:** Need high-performance text processing operations for large files.
@@ -816,14 +821,109 @@ let mut confidence: f64 = 0.5;
 confidence.min(1.0)  // Works!
 ```
 
+### Pattern: E2E testing with shell scripts and JSONL validation
+**Problem:** Need comprehensive end-to-end testing of all utilities with JSONL output validation.
+
+**Solution:** Use shell script test suite with jq for JSONL validation and diverse test fixtures.
+
+```bash
+#!/bin/bash
+# E2E Test Suite Structure
+
+# Test counter variables
+TESTS_RUN=0
+TESTS_PASSED=0
+TESTS_FAILED=0
+
+# Directory setup
+TEST_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+FIXTURES_DIR="$TEST_DIR/fixtures"
+LOGS_DIR="$TEST_DIR/logs"
+SAMPLES_DIR="$TEST_DIR/samples"
+
+mkdir -p "$LOGS_DIR"
+mkdir -p "$SAMPLES_DIR"
+
+# Test runner function
+run_test() {
+    local test_name="$1"
+    local command="$2"
+    local expected_result="$3"  # "pass" or "fail"
+
+    TESTS_RUN=$((TESTS_RUN + 1))
+
+    # Create log and sample files
+    local test_log="$LOGS_DIR/test_${TESTS_RUN}_${test_name// /_}.log"
+    local sample_file="$SAMPLES_DIR/test_${TESTS_RUN}_${test_name// /_}.jsonl"
+
+    # Run command and capture output
+    if eval "$command" > "$sample_file" 2>&1; then
+        local exit_code=0
+    else
+        local exit_code=$?
+    fi
+
+    # Check result matches expectation
+    if [ "$expected_result" = "pass" ]; then
+        if [ $exit_code -eq 0 ]; then
+            echo "✓ PASSED"
+            TESTS_PASSED=$((TESTS_PASSED + 1))
+        else
+            echo "✗ FAILED (exit code: $exit_code)"
+            TESTS_FAILED=$((TESTS_FAILED + 1))
+        fi
+    fi
+
+    # Validate JSONL output if command succeeded
+    if [ $exit_code -eq 0 ] && [ -s "$sample_file" ]; then
+        validate_jsonl "$sample_file" >> "$test_log" 2>&1
+    fi
+}
+
+# JSONL validation using jq
+validate_jsonl() {
+    local file="$1"
+    local line_num=0
+
+    while IFS= read -r line; do
+        line_num=$((line_num + 1))
+        if ! echo "$line" | jq empty 2>/dev/null; then
+            echo "Invalid JSON on line $line_num: $line"
+            return 1
+        fi
+    done < "$file"
+
+    return 0
+}
+
+# Example test usage
+run_test "ai-cat with unicode" \
+    "$AI_CAT $FIXTURES_DIR/unicode.txt" \
+    "pass"
+
+run_test "ai-grep pattern match" \
+    "$AI_GREP PATTERN $FIXTURES_DIR/multiline.txt" \
+    "pass"
+```
+
+**Essential test fixtures for comprehensive coverage:**
+- `empty.txt` - Edge case: zero-length file
+- `unicode.txt` - UTF-8, multi-language, emoji, math symbols
+- `special-chars.txt` - Quotes, dashes, special characters
+- `binary.dat` - Non-text data handling
+- `multiline.txt` - Line-based operations
+- `large.txt` - Memory mapping with 10K+ lines (158KB+)
+- `nested/` - Directory with subdirectories for recursive operations
+
 ## Current State Assessment
 - Project health: Green
-- Phase: Phase 3 (Polish & Scale) - ML integration complete!
-- Test coverage: All tests passing (42/42: 36 library + 5 integration + 1 doc)
-- Performance targets: SIMD operations implemented, ML features working, ready for benchmarking
+- Phase: Phase 4 (Validation) - E2E testing complete!
+- Test coverage: All tests passing (47/47: 41 library + 5 integration + 1 doc)
+- E2E testing: All 16 utilities tested across 6 test suites with JSONL validation
+- Performance targets: SIMD operations implemented, ML features working, E2E validated
 - Blockers: None
-- Completed: Phase 1 (MVP), Phase 2 (Async support), Phase 3 tasks 1-2 (SIMD optimizations, ML integration)
-- Next: Performance benchmarking, cross-language bindings (create-bindings)
+- Completed: Phase 1 (MVP), Phase 2 (Async support), Phase 3 (SIMD, ML, bindings), Phase 4 (E2E validation)
+- Next: Optional performance benchmarks, release preparation (v0.1.0)
 
 ## Agent-to-Agent Messages
 *Communication between iterations*
@@ -911,6 +1011,19 @@ confidence.min(1.0)  // Works!
 - All tests passing (47/47: 41 library + 5 integration + 1 doc)
 - Project is feature-complete with clean code quality!
 
+**Iteration 9 (2026-01-19):**
+- Created comprehensive E2E test suite (test_e2e/e2e_test_suite.sh)
+- Created diverse test fixtures (empty, unicode, binary, special-chars, large files, nested directories)
+- Tested all 16 utilities across 6 test suites (Basic, JSONL, Edge Cases, ML, Recursive, Error Handling)
+- Validated JSONL output format using jq
+- Ran full cargo test suite: 47/47 tests passing (41 library + 5 integration + 1 doc)
+- Verified memory mapping with 158KB file (10,000 lines)
+- Verified Unicode support (Chinese, Arabic, Hebrew, emoji, math symbols)
+- Verified ML features (pattern detection, file classification, content statistics)
+- Created E2E test report with findings and recommendations
+- Added E2E testing working pattern to CLAUDE.md
+- Phase 4 (Validation) COMPLETE!
+
 **Next iteration should focus on:**
 - Performance benchmarking and optimization (optional)
 - OpenAI API integration for advanced ML features (optional)
@@ -927,3 +1040,4 @@ confidence.min(1.0)  // Works!
 - 2026-01-19: Phase 3 (Polish & Scale) - ML integration complete! Added ml_ops module with PatternDetector, FileClassifier, ContentAnalysis, implemented ai-analyze utility with pattern detection and file analysis
 - 2026-01-19: Phase 3 (Polish & Scale) - Cross-language bindings complete! Added Python bindings (PyO3) and Node.js bindings (NAPI-RS) with full API exposure for memory access, SIMD operations, pattern detection, and file classification
 - 2026-01-19: Code quality improvements - Applied clippy suggestions, fixed redundant closures, unnecessary casts, and pointer argument warnings
+- 2026-01-19: Phase 4 (Validation) - E2E testing complete! Created comprehensive test suite, fixtures, tested all 16 utilities across 6 test suites, validated JSONL output, 47/47 tests passing

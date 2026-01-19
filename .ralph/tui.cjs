@@ -54,7 +54,10 @@ class RalphMonitor {
       let totalSubtasks = 0;
       let completedSubtasks = 0;
 
-      const subtaskSections = ymlContent.match(/subtasks:\s*\n([\s\S]*?)(?=\n[\s]{0,4}\w+:|$)/gm) || [];
+      // Find all subtask sections
+      // Lookahead matches: start of next task (  - id:), workflows section, or end of string
+      // NOTE: No /m flag because we want $ to match only at end of string, not end of line
+      const subtaskSections = ymlContent.match(/subtasks:\s*\n([\s\S]*?)(?=\n  - id:|\nworkflows:|$)/g) || [];
 
       subtaskSections.forEach(section => {
         const items = section.match(/^[\s]+-[\s]+"[^"]*"/gm) || [];

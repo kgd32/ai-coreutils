@@ -1,0 +1,364 @@
+=== AI-Coreutils E2E Test Results ===
+Timestamp: 19 Jan 2026 22:21:39
+
+TEST 1: ai-ls
+{"type":"file","timestamp":"2026-01-19T21:21:40.797847600Z","path":"test_e2e/fixtures\\README.md","size":978,"modified":"2026-01-19T21:18:28Z","is_dir":false,"is_symlink":false,"permissions":"??????????"}
+{"type":"file","timestamp":"2026-01-19T21:21:40.797932100Z","path":"test_e2e/fixtures\\binary.dat","size":29,"modified":"2026-01-19T21:19:10Z","is_dir":false,"is_symlink":false,"permissions":"??????????"}
+{"type":"file","timestamp":"2026-01-19T21:21:40.797950900Z","path":"test_e2e/fixtures\\code-sample.rs","size":430,"modified":"2026-01-19T21:18:35Z","is_dir":false,"is_symlink":false,"permissions":"??????????"}
+{"type":"file","timestamp":"2026-01-19T21:21:40.798130800Z","path":"test_e2e/fixtures\\config-file.ini","size":185,"modified":"2026-01-19T21:18:36Z","is_dir":false,"is_symlink":false,"permissions":"??????????"}
+{"type":"file","timestamp":"2026-01-19T21:21:40.798146800Z","path":"test_e2e/fixtures\\empty.txt","size":0,"modified":"2026-01-19T21:18:29Z","is_dir":false,"is_symlink":false,"permissions":"??????????"}
+{"type":"file","timestamp":"2026-01-19T21:21:40.798152700Z","path":"test_e2e/fixtures","size":4096,"modified":"2026-01-19T21:19:10Z","is_dir":true,"is_symlink":false,"permissions":"??????????"}
+{"type":"file","timestamp":"2026-01-19T21:21:40.798158Z","path":"test_e2e/fixtures\\json-sample.jsonl","size":305,"modified":"2026-01-19T21:18:34Z","is_dir":false,"is_symlink":false,"permissions":"??????????"}
+{"type":"file","timestamp":"2026-01-19T21:21:40.798163400Z","path":"test_e2e/fixtures\\multiline.txt","size":182,"modified":"2026-01-19T21:18:32Z","is_dir":false,"is_symlink":false,"permissions":"??????????"}
+{"type":"file","timestamp":"2026-01-19T21:21:40.798168700Z","path":"test_e2e/fixtures\\nested","size":0,"modified":"2026-01-19T21:19:05Z","is_dir":true,"is_symlink":false,"permissions":"??????????"}
+{"type":"file","timestamp":"2026-01-19T21:21:40.798173900Z","path":"test_e2e/fixtures\\special-chars.txt","size":357,"modified":"2026-01-19T21:18:33Z","is_dir":false,"is_symlink":false,"permissions":"??????????"}
+{"type":"file","timestamp":"2026-01-19T21:21:40.798179Z","path":"test_e2e/fixtures\\unicode.txt","size":442,"modified":"2026-01-19T21:18:31Z","is_dir":false,"is_symlink":false,"permissions":"??????????"}
+
+TEST 2: ai-cat with unicode
+{"type":"result","timestamp":"2026-01-19T21:21:42.248345100Z","data":{"content":"Hello 世界 🌍","file":"test_e2e/fixtures/unicode.txt","is_blank":false,"line_count":13,"line_non_blank_number":null,"line_number":null,"type":"file_content"}}
+{"type":"result","timestamp":"2026-01-19T21:21:42.248434200Z","data":{"content":"Привет мир","file":"test_e2e/fixtures/unicode.txt","is_blank":false,"line_count":13,"line_non_blank_number":null,"line_number":null,"type":"file_content"}}
+{"type":"result","timestamp":"2026-01-19T21:21:42.248446200Z","data":{"content":"مرحبا بالعالم","file":"test_e2e/fixtures/unicode.txt","is_blank":false,"line_count":13,"line_non_blank_number":null,"line_number":null,"type":"file_content"}}
+{"type":"result","timestamp":"2026-01-19T21:21:42.248452800Z","data":{"content":"こんにちは世界","file":"test_e2e/fixtures/unicode.txt","is_blank":false,"line_count":13,"line_non_blank_number":null,"line_number":null,"type":"file_content"}}
+{"type":"result","timestamp":"2026-01-19T21:21:42.248458800Z","data":{"content":"UTF-8 Test: Café, naïve, résumé","file":"test_e2e/fixtures/unicode.txt","is_blank":false,"line_count":13,"line_non_blank_number":null,"line_number":null,"type":"file_content"}}
+{"type":"result","timestamp":"2026-01-19T21:21:42.248465400Z","data":{"content":"Emoji: 😀 😃 😄 😁 🎉 🚀 💻","file":"test_e2e/fixtures/unicode.txt","is_blank":false,"line_count":13,"line_non_blank_number":null,"line_number":null,"type":"file_content"}}
+{"type":"result","timestamp":"2026-01-19T21:21:42.248471700Z","data":{"content":"Math: ∑ ∫ ∞ √ ≈ ≠ ≤ ≥","file":"test_e2e/fixtures/unicode.txt","is_blank":false,"line_count":13,"line_non_blank_number":null,"line_number":null,"type":"file_content"}}
+{"type":"result","timestamp":"2026-01-19T21:21:42.248513100Z","data":{"content":"Currency: $ € £ ¥ ₹ ₽","file":"test_e2e/fixtures/unicode.txt","is_blank":false,"line_count":13,"line_non_blank_number":null,"line_number":null,"type":"file_content"}}
+{"type":"result","timestamp":"2026-01-19T21:21:42.248522500Z","data":{"content":"RTL: שלום עולם","file":"test_e2e/fixtures/unicode.txt","is_blank":false,"line_count":13,"line_non_blank_number":null,"line_number":null,"type":"file_content"}}
+{"type":"result","timestamp":"2026-01-19T21:21:42.248528800Z","data":{"content":"Mixed: English, 中文, 日本語, 한국어, العربية, עברית","file":"test_e2e/fixtures/unicode.txt","is_blank":false,"line_count":13,"line_non_blank_number":null,"line_number":null,"type":"file_content"}}
+{"type":"result","timestamp":"2026-01-19T21:21:42.248535600Z","data":{"content":"Special chars: © ® ™ § ¶ † ‡ • … ‰","file":"test_e2e/fixtures/unicode.txt","is_blank":false,"line_count":13,"line_non_blank_number":null,"line_number":null,"type":"file_content"}}
+{"type":"result","timestamp":"2026-01-19T21:21:42.248541900Z","data":{"content":"Quotes: \" ' \" ' « » ‹ ›","file":"test_e2e/fixtures/unicode.txt","is_blank":false,"line_count":13,"line_non_blank_number":null,"line_number":null,"type":"file_content"}}
+{"type":"result","timestamp":"2026-01-19T21:21:42.248548100Z","data":{"content":"Dashes: – — ―","file":"test_e2e/fixtures/unicode.txt","is_blank":false,"line_count":13,"line_non_blank_number":null,"line_number":null,"type":"file_content"}}
+{"type":"result","timestamp":"2026-01-19T21:21:42.248554700Z","data":{"content":"Hello 世界 🌍\r\nПривет мир\r\nمرحبا بالعالم\r\nこんにちは世界\r\nUTF-8 Test: Café, naïve, résumé\r\nEmoji: 😀 😃 😄 😁 🎉 🚀 💻\r\nMath: ∑ ∫ ∞ √ ≈ ≠ ≤ ≥\r\nCurrency: $ € £ ¥ ₹ ₽\r\nRTL: שלום עולם\r\nMixed: English, 中文, 日本語, 한국어, العربية, עברית\r\nSpecial chars: © ® ™ § ¶ † ‡ • … ‰\r\nQuotes: \" ' \" ' « » ‹ ›\r\nDashes: – — ―\r\n","file":"test_e2e/fixtures/unicode.txt","memory_pointer":null,"size":442,"type":"file_summary"}}
+
+TEST 3: ai-grep with patterns
+{"type":"match","timestamp":"2026-01-19T21:21:43.989287100Z","file":"test_e2e/fixtures/multiline.txt","line_number":11,"line_content":"11:PATTERN line","match_start":0,"match_end":7}
+{"type":"match","timestamp":"2026-01-19T21:21:43.989410600Z","file":"test_e2e/fixtures/multiline.txt","line_number":14,"line_content":"14:PATTERN again","match_start":0,"match_end":7}
+
+TEST 4: ai-head
+{"type":"progress","timestamp":"2026-01-19T21:21:45.662713Z","current":0,"total":1,"message":"Starting head operation"}
+{"type":"progress","timestamp":"2026-01-19T21:21:45.662819600Z","current":1,"total":1,"message":"Processing: test_e2e/fixtures/multiline.txt"}
+Line 1
+Line 2
+Line 3
+Line 4
+Line 5
+{"type":"metadata","timestamp":"2026-01-19T21:21:45.662974300Z","info":{"bytes_read":40,"count":5,"file":"test_e2e/fixtures/multiline.txt","operation":"head","unit":"lines"}}
+
+TEST 5: ai-tail
+{"type":"progress","timestamp":"2026-01-19T21:21:47.259892200Z","current":0,"total":1,"message":"Starting tail operation"}
+{"type":"progress","timestamp":"2026-01-19T21:21:47.260009400Z","current":1,"total":1,"message":"Processing: test_e2e/fixtures/multiline.txt"}
+Line 16
+Line 17
+Line 18
+Line 19
+Line 20
+{"type":"metadata","timestamp":"2026-01-19T21:21:47.260153800Z","info":{"bytes_read":45,"count":5,"file":"test_e2e/fixtures/multiline.txt","following":false,"operation":"tail","unit":"lines"}}
+
+TEST 6: ai-wc
+{"type":"progress","timestamp":"2026-01-19T21:21:49.074141500Z","current":0,"total":1,"message":"Starting wc operation"}
+{"type":"progress","timestamp":"2026-01-19T21:21:49.074249400Z","current":1,"total":1,"message":"Processing: test_e2e/fixtures/multiline.txt"}
+     20       40      182  test_e2e/fixtures/multiline.txt
+{"type":"metadata","timestamp":"2026-01-19T21:21:49.074423500Z","info":{"bytes":182,"chars":182,"file":"test_e2e/fixtures/multiline.txt","lines":20,"max_line_length":13,"operation":"wc","words":40}}
+
+TEST 7: ai-analyze patterns
+{"type":"error","timestamp":"2026-01-19T21:21:57.529087500Z","message":"test_e2e/fixtures/patterns.txt: File not found: test_e2e/fixtures/patterns.txt","code":"FILE_NOT_FOUND"}
+
+TEST 8: ai-analyze classify
+{"type":"result","timestamp":"2026-01-19T21:21:59.221017100Z","data":{"confidence":0.9500000000000001,"encoding":"utf-8","file":"test_e2e/fixtures/code-sample.rs","file_type":"Rust source","is_binary":false,"language":"rust","mime_type":"text/x-rust","type":"classification"}}
+{"type":"result","timestamp":"2026-01-19T21:21:59.221526400Z","data":{"file":"test_e2e/fixtures/code-sample.rs","issues":[],"patterns_by_type":{"FilePath":1},"statistics":{"avg_line_length":16.695652173913043,"bytes":430,"characters":430,"entropy":4.75626566355188,"lines":23,"max_line_length":43,"whitespace_ratio":0.2813953488372093,"words":49},"total_patterns":1,"type":"analysis"}}
+
+TEST 9: ai-analyze statistics
+{"type":"result","timestamp":"2026-01-19T21:22:00.785519500Z","data":{"confidence":0.9500000000000001,"encoding":"utf-8","file":"test_e2e/fixtures/multiline.txt","file_type":"Plain text","is_binary":false,"language":"unknown","mime_type":"text/plain","type":"classification"}}
+{"type":"result","timestamp":"2026-01-19T21:22:00.785862900Z","data":{"file":"test_e2e/fixtures/multiline.txt","issues":[],"patterns_by_type":{},"statistics":{"avg_line_length":7.1,"bytes":182,"characters":182,"entropy":3.9075402732466604,"lines":20,"max_line_length":13,"whitespace_ratio":0.32967032967032966,"words":40},"total_patterns":0,"type":"analysis"}}
+
+=== CARGO TEST RESULTS ===
+
+error: unexpected argument '--test-threads' found
+
+  tip: a similar argument exists: '--test'
+  tip: to pass '--test-threads' as a value, use '-- --test-threads'
+
+Usage: cargo.exe test --test [<NAME>] [TESTNAME] [-- [ARGS]...]
+
+For more information, try '--help'.
+=== CARGO TEST RESULTS ===
+
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.44s
+     Running unittests src\lib.rs (target\debug\deps\ai_coreutils-ee9f8c8fc43a5e9c.exe)
+
+running 41 tests
+test async_ops::tests::test_async_grep ... ok
+test async_ops::tests::test_async_grep_case_insensitive ... ok
+test async_ops::tests::test_async_grep_invert ... ok
+test async_ops::tests::test_async_read_lines ... ok
+test async_ops::tests::test_async_read_write_file ... ok
+test async_ops::tests::test_async_wc ... ok
+test error::tests::test_error_display ... ok
+test error::tests::test_error_from_io ... ok
+test fs_utils::tests::test_get_file_metadata ... ok
+test fs_utils::tests::test_is_path_within_base ... ok
+test fs_utils::tests::test_validate_path ... ok
+test jsonl::tests::test_error_record ... ok
+test jsonl::tests::test_file_entry_record ... ok
+test jsonl::tests::test_jsonl_output_to_vec ... ok
+test jsonl::tests::test_result_record ... ok
+test memory::tests::test_count_byte ... ok
+test memory::tests::test_count_text_metrics ... ok
+test memory::tests::test_find_pattern ... ok
+test memory::tests::test_memory_access_bounds_checking ... ok
+test memory::tests::test_memory_access_get ... ok
+test memory::tests::test_memory_access_get_byte ... ok
+test memory::tests::test_memory_access_size ... ok
+test ml_ops::tests::test_content_analysis ... ok
+test ml_ops::tests::test_entropy_calculation ... ok
+test ml_ops::tests::test_file_classification_code ... ok
+test ml_ops::tests::test_file_classification_text ... ok
+test ml_ops::tests::test_is_binary_content ... ok
+test ml_ops::tests::test_pattern_detection_email ... ok
+test ml_ops::tests::test_pattern_detection_ip ... ok
+test ml_ops::tests::test_pattern_detection_url ... ok
+test ml_ops::tests::test_pattern_detection_uuid ... ok
+test ml_ops::tests::test_text_statistics ... ok
+test simd_ops::tests::test_byte_counter ... ok
+test simd_ops::tests::test_byte_counter_multiple ... ok
+test simd_ops::tests::test_empty_data ... ok
+test simd_ops::tests::test_pattern_not_found ... ok
+test simd_ops::tests::test_pattern_searcher_find_all ... ok
+test simd_ops::tests::test_pattern_searcher_find_first ... ok
+test simd_ops::tests::test_text_processor_analyze ... ok
+test simd_ops::tests::test_whitespace_detector_count_lines ... ok
+test simd_ops::tests::test_whitespace_detector_count_words ... ok
+
+test result: ok. 41 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.42s
+
+     Running unittests src\bin\ai-analyze.rs (target\debug\deps\ai_analyze-e5b41ccfe1485e28.exe)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src\bin\ai-cat.rs (target\debug\deps\ai_cat-ef5b73c6e563cbd6.exe)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src\bin\ai-chmod.rs (target\debug\deps\ai_chmod-c629737102e74dd8.exe)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src\bin\ai-chown.rs (target\debug\deps\ai_chown-57cdfa37e4c8ecde.exe)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src\bin\ai-cp.rs (target\debug\deps\ai_cp-65adaa11d7121a67.exe)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src\bin\ai-find.rs (target\debug\deps\ai_find-efec5339ce2ba0db.exe)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src\bin\ai-grep.rs (target\debug\deps\ai_grep-00b9b1daa2cc3213.exe)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src\bin\ai-head.rs (target\debug\deps\ai_head-2f8113b2478f575f.exe)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src\bin\ai-ls.rs (target\debug\deps\ai_ls-1d9c576634fdacde.exe)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src\bin\ai-mkdir.rs (target\debug\deps\ai_mkdir-d36a5951e0dfbaa1.exe)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src\bin\ai-mv.rs (target\debug\deps\ai_mv-80e261a446701c2a.exe)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src\bin\ai-rm.rs (target\debug\deps\ai_rm-3e1c92c3731c4bb9.exe)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src\bin\ai-rmdir.rs (target\debug\deps\ai_rmdir-39191786432ec6a1.exe)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src\bin\ai-tail.rs (target\debug\deps\ai_tail-921143cb01a5898a.exe)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src\bin\ai-touch.rs (target\debug\deps\ai_touch-2068db91fe3aae1d.exe)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src\bin\ai-wc.rs (target\debug\deps\ai_wc-de5c55e530ed051c.exe)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests\integration_tests.rs (target\debug\deps\integration_tests-93a1b54d87cf5e36.exe)
+
+running 5 tests
+test test_ai_cat_basic ... ok
+test test_ai_grep_basic ... ok
+test test_ai_ls_basic ... ok
+test test_jsonl_output ... ok
+test test_memory_mapping ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+   Doc-tests ai_coreutils
+
+running 1 test
+test src\memory.rs - memory::SafeMemoryAccess::new (line 30) - compile ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s
+
+TEST: Large file memory mapping
+{"type":"result","timestamp":"2026-01-19T21:22:39.714944Z","data":{"content":"Test line 0","file":"test_e2e/large.txt","is_blank":false,"line_count":10000,"line_non_blank_number":null,"line_number":null,"type":"file_content"}}
+{"type":"result","timestamp":"2026-01-19T21:22:39.715000600Z","data":{"content":"Test line 1","file":"test_e2e/large.txt","is_blank":false,"line_count":10000,"line_non_blank_number":null,"line_number":null,"type":"file_content"}}
+{"type":"result","timestamp":"2026-01-19T21:22:39.715008300Z","data":{"content":"Test line 2","file":"test_e2e/large.txt","is_blank":false,"line_count":10000,"line_non_blank_number":null,"line_number":null,"type":"file_content"}}
+Large file test passed
+TEST: Large file memory mapping
+{"type":"progress","timestamp":"2026-01-19T21:22:45.855868400Z","current":0,"total":1,"message":"Starting wc operation"}
+{"type":"progress","timestamp":"2026-01-19T21:22:45.855946400Z","current":1,"total":1,"message":"Processing: test_e2e/large.txt"}
+  10000    30000   158890  test_e2e/large.txt
+{"type":"metadata","timestamp":"2026-01-19T21:22:45.856338200Z","info":{"bytes":158890,"chars":158890,"file":"test_e2e/large.txt","lines":10000,"max_line_length":14,"operation":"wc","words":30000}}
+Large file test passed
+=== BENCHMARK RESULTS ===
+   Compiling regex-syntax v0.8.8
+   Compiling dirs v5.0.1
+   Compiling ciborium v0.2.2
+   Compiling uuid v1.19.0
+   Compiling chrono v0.4.43
+   Compiling tinytemplate v1.2.1
+   Compiling tokio-stream v0.1.18
+   Compiling thiserror v1.0.69
+   Compiling anyhow v1.0.100
+   Compiling fastrand v2.3.0
+   Compiling anes v0.1.6
+   Compiling memmap2 v0.9.9
+   Compiling oorandom v11.1.5
+   Compiling tempfile v3.24.0
+   Compiling tokio-test v0.4.5
+   Compiling regex-automata v0.4.13
+   Compiling regex v1.12.2
+   Compiling env_logger v0.10.2
+   Compiling criterion v0.5.1
+   Compiling ai-coreutils v0.1.0 (C:\Users\Kimpa\Documents\Vibe\ai-coreutils)
+    Finished `bench` profile [optimized + debuginfo] target(s) in 5m 58s
+     Running unittests src\lib.rs (target\release\deps\ai_coreutils-d8e7811ecab1075a.exe)
+
+running 41 tests
+test async_ops::tests::test_async_grep ... ignored
+test async_ops::tests::test_async_grep_case_insensitive ... ignored
+test async_ops::tests::test_async_grep_invert ... ignored
+test async_ops::tests::test_async_read_lines ... ignored
+test async_ops::tests::test_async_read_write_file ... ignored
+test async_ops::tests::test_async_wc ... ignored
+test error::tests::test_error_display ... ignored
+test error::tests::test_error_from_io ... ignored
+test fs_utils::tests::test_get_file_metadata ... ignored
+test fs_utils::tests::test_is_path_within_base ... ignored
+test fs_utils::tests::test_validate_path ... ignored
+test jsonl::tests::test_error_record ... ignored
+test jsonl::tests::test_file_entry_record ... ignored
+test jsonl::tests::test_jsonl_output_to_vec ... ignored
+test jsonl::tests::test_result_record ... ignored
+test memory::tests::test_count_byte ... ignored
+test memory::tests::test_count_text_metrics ... ignored
+test memory::tests::test_find_pattern ... ignored
+test memory::tests::test_memory_access_bounds_checking ... ignored
+test memory::tests::test_memory_access_get ... ignored
+test memory::tests::test_memory_access_get_byte ... ignored
+test memory::tests::test_memory_access_size ... ignored
+test ml_ops::tests::test_content_analysis ... ignored
+test ml_ops::tests::test_entropy_calculation ... ignored
+test ml_ops::tests::test_file_classification_code ... ignored
+test ml_ops::tests::test_file_classification_text ... ignored
+test ml_ops::tests::test_is_binary_content ... ignored
+test ml_ops::tests::test_pattern_detection_email ... ignored
+test ml_ops::tests::test_pattern_detection_ip ... ignored
+test ml_ops::tests::test_pattern_detection_url ... ignored
+test ml_ops::tests::test_pattern_detection_uuid ... ignored
+test ml_ops::tests::test_text_statistics ... ignored
+test simd_ops::tests::test_byte_counter ... ignored
+test simd_ops::tests::test_byte_counter_multiple ... ignored
+test simd_ops::tests::test_empty_data ... ignored
+test simd_ops::tests::test_pattern_not_found ... ignored
+test simd_ops::tests::test_pattern_searcher_find_all ... ignored
+test simd_ops::tests::test_pattern_searcher_find_first ... ignored
+test simd_ops::tests::test_text_processor_analyze ... ignored
+test simd_ops::tests::test_whitespace_detector_count_lines ... ignored
+test simd_ops::tests::test_whitespace_detector_count_words ... ignored
+
+test result: ok. 0 passed; 0 failed; 41 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src\bin\ai-analyze.rs (target\release\deps\ai_analyze-ab40d23356ee259d.exe)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src\bin\ai-cat.rs (target\release\deps\ai_cat-f2c15c725fa09556.exe)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src\bin\ai-chmod.rs (target\release\deps\ai_chmod-15523aaa4f22190e.exe)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src\bin\ai-chown.rs (target\release\deps\ai_chown-46173d670a5ca2d9.exe)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src\bin\ai-cp.rs (target\release\deps\ai_cp-b46fd7370d1c4e96.exe)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src\bin\ai-find.rs (target\release\deps\ai_find-daf0db60586e9d0b.exe)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src\bin\ai-grep.rs (target\release\deps\ai_grep-2a9eed9f83195c86.exe)

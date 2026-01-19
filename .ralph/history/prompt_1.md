@@ -51,12 +51,25 @@ At the END of your response, ALWAYS include this status block:
 STATUS: IN_PROGRESS | COMPLETE | BLOCKED
 CURRENT_TASK: {{TASK_ID}}
 TASKS_COMPLETED_THIS_LOOP: {{N}}
+SUBTASKS_MARKED_COMPLETE: [list the subtask names you marked with ✓]
 FILES_MODIFIED: {{N}}
 TESTS_STATUS: PASSING | FAILING | NOT_RUN
 WORK_TYPE: DOCUMENTATION | IMPLEMENTATION | TESTING | REFACTORING
 EXIT_SIGNAL: false | true
 RECOMMENDATION: {{one line summary}}
 ---END_RALPH_STATUS---
+```
+
+**⚠️ CRITICAL**: You MUST include `SUBTASKS_MARKED_COMPLETE` with the actual names of subtasks you marked with ✓!
+
+Example:
+```markdown
+SUBTASKS_MARKED_COMPLETE: ["Create docs/ directory structure", "Write docs/README.md"]
+```
+
+If you completed NO subtasks, write:
+```markdown
+SUBTASKS_MARKED_COMPLETE: []
 ```
 
 **Field meanings:**
@@ -348,11 +361,37 @@ cargo run --bin ai-ls -- --help  # Test utility
 ## Always Remember
 
 - **Read ralph.yml first** - It defines your tasks, subtasks, and acceptance criteria
-- **Mark subtasks with ✓** - Do this immediately after completing each one
+- **Mark subtasks with ✓ IMMEDIATELY** - Do this RIGHT AFTER completing each one, before anything else
 - **Check gnu-core-utils.md** - This is the blueprint for utility implementations
 - **Invoke appropriate skills** - Use skills to help with specific tasks
 - **Update scratchpad** - Leave context for the next agent
 - **Set EXIT_SIGNAL correctly** - Only when task is fully complete per ralph.yml criteria
+
+---
+
+## ⚠️ PRE-FLIGHT CHECKLIST (Before Finishing Your Response)
+
+Before you submit your response, verify:
+
+- [ ] **Did I mark ALL completed subtasks with ✓ in ralph.yml?**
+- [ ] **Did I commit the ralph.yml changes?**
+- [ ] **Did I include SUBTASKS_MARKED_COMPLETE in my RALPH_STATUS block?**
+- [ ] **Did I list the ACTUAL NAMES of the subtasks I marked?**
+
+**If you answer NO to any of these: GO BACK AND FIX IT NOW!**
+
+**Example of correct SUBTASKS_MARKED_COMPLETE:**
+```markdown
+SUBTASKS_MARKED_COMPLETE: ["Create docs/ directory structure", "Write docs/README.md"]
+```
+
+**NOT correct:**
+```markdown
+SUBTASKS_MARKED_COMPLETE: 2
+SUBTASKS_MARKED_COMPLETE: yes
+```
+
+**Be specific. List the actual subtask names.**
 
 
 ---
@@ -360,30 +399,32 @@ cargo run --bin ai-ls -- --help  # Test utility
 ## Current Loop Context
 
 - **Iteration**: 1
-- **Session**: ralph_1768853577556_766
-- **Task Progress**: 11/12 tasks (91%)
-- **Subtask Progress**: 0/12 subtasks (0%)
+- **Session**: ralph_1768856812395_2952
+- **Task Progress**: 12/13 tasks (92%)
+- **Subtask Progress**: 0/82 subtasks (0%)
 - **Current Task**:
-create-documentation - Complete Project Documentation (todo)
+e2e-acid-test - End-to-End Acid Test & Validation (todo)
   Subtasks:
-  - "Create docs/ directory structure"
-  - "Write docs/README.md (documentation index)"
-  - "Write docs/architecture.md (system design, modules, data flow)"
-  - "Write docs/getting-started.md (installation, first steps, quick examples)"
-  - "Write docs/utilities/ (one file per utility with CLI reference)"
-  - "Write docs/api-reference.md (library API documentation)"
-  - "Write docs/jsonl-format.md (JSONL output specification)"
-  - "Write docs/memory-access.md (memory pointer usage guide)"
-  - "Write docs/async-operations.md (async/await patterns)"
-  - "Write docs/simd-optimizations.md (SIMD usage and performance)"
-  - "Write docs/ml-integration.md (pattern detection, analysis)"
-  - "Write docs/bindings.md (Python/Node.js bindings guide)"
-  - "Write docs/performance.md (benchmarking, optimization tips)"
-  - "Write docs/development.md (building, testing, contributing)"
-  - "Write docs/examples/ (practical use cases and tutorials)"
-  - "Generate rustdoc API documentation (cargo doc)"
-  - "Create docs/SUMMARY.md for mdBook (optional)"
-  - "Add documentation CI checks"
+  - "Create test data and test fixtures (large files, various formats, edge cases)"
+  - "Test all 15 core utilities individually (ls, cat, grep, touch, mkdir, rmdir, head, tail, wc, cp, mv, rm, find, chmod, chown, analyze)"
+  - "Validate JSONL output format for all utilities"
+  - "Test memory mapping with files > 10MB"
+  - "Test SIMD performance acceleration"
+  - "Test async operations with concurrent file processing"
+  - "Test ML pattern detection and file classification"
+  - "Test Python bindings (PyO3) if available"
+  - "Test Node.js bindings (NAPI-RS) if available"
+  - "Run integration tests (cargo test --test-threads=1)"
+  - "Run benchmarks and collect performance metrics"
+  - "Test error handling and edge cases"
+  - "Create comprehensive test report with all findings"
+  - "Document any issues found with severity ratings"
+  - "Validate against GNU coreutils behavior where applicable"
+  - "Test with various file sizes (empty, small, large, very large)"
+  - "Test with special characters, unicode, binary data"
+  - "Test recursive operations on directory trees"
+  - "Test pipeline scenarios (chaining utilities together)"
+  - "Generate summary with pass/fail statistics and recommendations"
 
 ---
 

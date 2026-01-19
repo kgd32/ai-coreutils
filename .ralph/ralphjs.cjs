@@ -237,12 +237,27 @@ class RalphLoop {
   }
 
   /**
-   * Parse RALPH_STATUS block from output
+   * Parse RALPH_STATUS block from Claude JSON output
    */
   parseRalphStatus(outputFile) {
     try {
-      const output = fs.readFileSync(outputFile, 'utf8');
-      const statusMatch = output.match(/---RALPH_STATUS---([\s\S]*?)---END_RALPH_STATUS---/);
+      const rawContent = fs.readFileSync(outputFile, 'utf8');
+
+      // Parse JSON first
+      let contentToSearch = rawContent;
+      try {
+        const jsonData = JSON.parse(rawContent);
+        // Extract content from result field if available
+        if (jsonData.result && typeof jsonData.result === 'string') {
+          contentToSearch = jsonData.result;
+        }
+      } catch (e) {
+        // If not valid JSON, use raw content
+        contentToSearch = rawContent;
+      }
+
+      // Search for RALPH_STATUS block
+      const statusMatch = contentToSearch.match(/---RALPH_STATUS---([\s\S]*?)---END_RALPH_STATUS---/);
 
       if (!statusMatch) {
         return { exitSignal: false };
@@ -417,7 +432,9 @@ class RalphLoop {
       let completedSubtasks = 0;
 
       // Find all subtask sections
-      const subtaskSections = ymlContent.match(/subtasks:\s*\n([\s\S]*?)(?=\n[\s]{0,4}\w+:|$)/gm) || [];
+      // Lookahead matches: start of next task (  - id:), workflows section, or end of string
+      // NOTE: No /m flag because we want $ to match only at end of string, not end of line
+      const subtaskSections = ymlContent.match(/subtasks:\s*\n([\s\S]*?)(?=\n  - id:|\nworkflows:|$)/g) || [];
 
       subtaskSections.forEach(section => {
         // Count all subtask items (lines with "- ")

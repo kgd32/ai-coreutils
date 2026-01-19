@@ -1,0 +1,4 @@
+{"type":"result","status":"success","data":{"file":"test.txt","lines":10}}
+{"type":"info","message":"Processing file","file":"test.txt"}
+{"type":"progress","current":5,"total":10,"message":"Halfway done"}
+{"type":"error","code":"TEST_ERROR","message":"Test error message","file":"test.txt","line":42}

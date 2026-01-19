@@ -1,0 +1,19 @@
+Tab	separated	values
+Newline\nseparated\values
+Carriage\Return\rseparated
+Quote "test" and 'another'
+Backslash \test\
+Pipe | test
+Ampersand & test
+Semicolon; test
+Dollar $ test
+Backtick ` test`
+Asterisk * test
+Question ? test
+Less < greater > than
+Brackets [ ] { } ( )
+Hash # test
+Tilde ~ test
+Percent % test
+At @ test
+Exclamation ! test
