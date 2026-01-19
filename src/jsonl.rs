@@ -179,7 +179,7 @@ mod tests {
         let mut output = JsonlOutput::new(Vec::new());
         let record = JsonlRecord::error("Test error", "TEST_ERR");
         output.write_record(&record).unwrap();
-        let result = String::from_utf8(output.writer).unwrap();
+        let result = String::from_utf8(output.writer.clone()).unwrap();
         assert!(result.contains("Test error"));
     }
 }

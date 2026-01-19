@@ -87,7 +87,7 @@ tasks:
     description: |
       Implement ls with JSONL output and memory optimizations
     priority: "critical"
-    status: "todo"
+    status: "done"
     dependencies: ["implement-memory-layer", "implement-jsonl-output"]
     acceptance_criteria:
       - "Basic ls functionality"

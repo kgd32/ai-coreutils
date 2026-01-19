@@ -3,7 +3,6 @@
 //! These tests verify the basic functionality of the core utilities.
 
 use std::fs;
-use std::io::Write;
 use tempfile::TempDir;
 
 #[test]

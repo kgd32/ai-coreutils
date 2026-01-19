@@ -35,6 +35,10 @@ pub enum AiCoreutilsError {
     /// Operation not supported
     #[error("Operation not supported: {0}")]
     NotSupported(String),
+
+    /// WalkDir error
+    #[error("Directory traversal error: {0}")]
+    WalkDir(#[from] walkdir::Error),
 }
 
 /// Result type alias for AI-Coreutils

@@ -126,10 +126,17 @@ impl SafeMemoryAccess {
     /// Create a SafeMemoryAccess from a vector (for testing)
     #[cfg(test)]
     pub fn from_vec(data: Vec<u8>) -> Result<Self> {
-        use std::io::Cursor;
-        // Create a temporary file-like structure
-        let mmap = Mmap::map(&data.as_slice())
-            .map_err(|e| AiCoreutilsError::MemoryAccess(format!("Failed to create mmap from vec: {}", e)))?;
+        use std::io::Write;
+        // Create a temporary file
+        let mut temp_file = tempfile::NamedTempFile::new()?;
+        temp_file.write_all(&data)?;
+        temp_file.flush()?;
+
+        // Create mmap from the file
+        let mmap = unsafe {
+            Mmap::map(&*temp_file.as_file())
+                .map_err(|e| AiCoreutilsError::MemoryAccess(format!("Failed to create mmap from vec: {}", e)))?
+        };
 
         Ok(Self {
             size: data.len(),
