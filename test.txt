@@ -3,3 +3,4 @@ Line 2
 
 Last line
 test
+test2
