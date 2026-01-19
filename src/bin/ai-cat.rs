@@ -15,17 +15,45 @@ struct Cli {
     #[arg(required = true)]
     files: Vec<PathBuf>,
 
-    /// Show line numbers
+    /// Number all output lines
     #[arg(short, long)]
     number: bool,
+
+    /// Number non-blank lines
+    #[arg(short = 'b', long)]
+    number_nonblank: bool,
+
+    /// Show all characters (including non-printing)
+    #[arg(short = 'A', long)]
+    show_all: bool,
+
+    /// Show end of lines as $
+    #[arg(short, long)]
+    show_ends: bool,
+
+    /// Show tabs as ^I
+    #[arg(short = 'T', long)]
+    show_tabs: bool,
+
+    /// Squeeze multiple blank lines
+    #[arg(short, long)]
+    squeeze_blank: bool,
 
     /// Show memory pointer (for AI agent memory access)
     #[arg(short = 'p', long)]
     mem_ptr: bool,
 
-    /// Output JSONL (always enabled for AI agents)
+    /// Output JSONL (always enabled for AI-Coreutils agents)
     #[arg(short, long, default_value_t = true)]
     json: bool,
+}
+
+#[derive(Debug, Clone)]
+struct LineInfo {
+    content: String,
+    line_number: Option<usize>,
+    non_blank_number: Option<usize>,
+    is_blank: bool,
 }
 
 fn main() -> Result<()> {
@@ -54,16 +82,127 @@ fn cat_file(path: &PathBuf, cli: &Cli) -> Result<()> {
         return Ok(());
     };
 
-    let ptr = mem_access.as_ptr();
+    let lines: Vec<&str> = content.lines().collect();
+    let mut line_infos = Vec::new();
 
-    let record = JsonlRecord::result(serde_json::json!({
-        "file": path.display().to_string(),
-        "content": content,
-        "size": mem_access.size(),
-        "memory_pointer": if cli.mem_ptr { Some(format!("{:?}", ptr)) } else { None },
-    }));
+    let squeeze_blank = cli.squeeze_blank;
+    let mut last_was_blank = false;
+    let mut non_blank_count = 0;
 
-    println!("{}", record.to_jsonl()?);
+    for (idx, line) in lines.iter().enumerate() {
+        let is_blank = line.is_empty();
+
+        // Skip squeezed blanks
+        if squeeze_blank && is_blank && last_was_blank {
+            continue;
+        }
+
+        let line_info = if cli.number_nonblank {
+            if is_blank {
+                LineInfo {
+                    content: String::new(),
+                    line_number: None,
+                    non_blank_number: None,
+                    is_blank: true,
+                }
+            } else {
+                non_blank_count += 1;
+                LineInfo {
+                    content: line.to_string(),
+                    line_number: None,
+                    non_blank_number: Some(non_blank_count),
+                    is_blank: false,
+                }
+            }
+        } else if cli.number {
+            LineInfo {
+                content: line.to_string(),
+                line_number: Some(idx + 1),
+                non_blank_number: None,
+                is_blank: false,
+            }
+        } else if cli.show_all {
+            // Convert all characters to visible representation
+            let all_chars: String = line.chars().map(|c| {
+                match c {
+                    '\t' => "^I".to_string(),
+                    '\n' => "$".to_string(),
+                    c if c.is_control() => format!("^{}", c as u32),
+                    c => c.to_string(),
+                }
+            }).collect();
+            LineInfo {
+                content: all_chars,
+                line_number: None,
+                non_blank_number: None,
+                is_blank: false,
+            }
+        } else if cli.show_ends {
+            // Show $ at end of each line
+            let with_ends = format!("{}$", line);
+            LineInfo {
+                content: with_ends,
+                line_number: None,
+                non_blank_number: None,
+                is_blank: false,
+            }
+        } else if cli.show_tabs {
+            // Show tabs as ^I
+            let with_tabs = line.replace('\t', "^I");
+            LineInfo {
+                content: with_tabs,
+                line_number: None,
+                non_blank_number: None,
+                is_blank: false,
+            }
+        } else {
+            LineInfo {
+                content: line.to_string(),
+                line_number: None,
+                non_blank_number: None,
+                is_blank: false,
+            }
+        };
+
+        if !is_blank || !squeeze_blank {
+            line_infos.push(line_info);
+        }
+
+        last_was_blank = is_blank;
+    }
+
+    // Output all lines
+    let line_count = line_infos.len();
+
+    for line_info in &line_infos {
+        let record = JsonlRecord::result(serde_json::json!({
+            "type": "file_content",
+            "file": path.display().to_string(),
+            "content": line_info.content,
+            "line_number": line_info.line_number,
+            "line_non_blank_number": line_info.non_blank_number,
+            "is_blank": line_info.is_blank,
+            "line_count": line_count,
+        }));
+
+        println!("{}", record.to_jsonl()?);
+    }
+
+    // If only one file and no special formatting, output a summary record
+    if cli.files.len() == 1 && !cli.number && !cli.number_nonblank && !cli.show_all && !cli.show_ends && !cli.show_tabs {
+        let ptr = mem_access.as_ptr();
+        let size = mem_access.size();
+
+        let record = JsonlRecord::result(serde_json::json!({
+            "type": "file_summary",
+            "file": path.display().to_string(),
+            "content": content,
+            "size": size,
+            "memory_pointer": if cli.mem_ptr { Some(format!("{:?}", ptr)) } else { None },
+        }));
+
+        println!("{}", record.to_jsonl()?);
+    }
 
     Ok(())
 }

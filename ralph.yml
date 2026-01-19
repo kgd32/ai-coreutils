@@ -106,7 +106,7 @@ tasks:
     description: |
       Implement cat with memory mapping and JSONL output
     priority: "critical"
-    status: "todo"
+    status: "done"
     dependencies: ["implement-memory-layer", "implement-jsonl-output"]
     acceptance_criteria:
       - "Basic cat functionality"
