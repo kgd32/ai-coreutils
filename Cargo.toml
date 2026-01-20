@@ -148,6 +148,10 @@ harness = false
 name = "simd_performance"
 harness = false
 
+[[bench]]
+name = "simd_comprehensive"
+harness = false
+
 [profile.release]
 lto = true
 codegen-units = 1

@@ -22,5 +22,5 @@ pub mod python;
 pub use error::{AiCoreutilsError, Result};
 pub use jsonl::{JsonlOutput, JsonlRecord};
 pub use memory::SafeMemoryAccess;
-pub use simd_ops::{SimdConfig, SimdPatternSearcher, SimdByteCounter, SimdTextProcessor, TextMetrics};
+pub use simd_ops::{SimdConfig, SimdPatternSearcher, SimdByteCounter, SimdTextProcessor, TextMetrics, SimdNewlineCounter, SimdMemoryOps, SimdHasher, SimdEntropyCalculator, SimdWhitespaceDetector, SimdCaseFolder, SimdUtf8Validator, SimdStringComparer, SimdMultiPatternSearcher};
 pub use ml_ops::{PatternDetector, FileClassifier, MlConfig, PatternType, ContentAnalysis, FileClassification};
